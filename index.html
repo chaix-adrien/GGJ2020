@@ -11,13 +11,11 @@
 				height: 600,
 				physics: {
 					default: "arcade",
-					arcade: {
-						gravity: { y: 200 },
-					},
 				},
 				scene: {
 					preload: preload,
 					create: create,
+					update: update,
 				},
 			}
 
@@ -32,7 +30,7 @@
 			}
 
 			function create() {
-				this.add.image(400, 300, "sky")
+				var img = this.add.image(400, 300, "sky")
 
 				var particles = this.add.particles("red")
 
@@ -41,15 +39,29 @@
 					scale: { start: 1, end: 0 },
 					blendMode: "ADD",
 				})
+				const rect = new Phaser.Geom.Rectangle()
+				rect.setSize(400, 400)
+				this.logo = this.physics.add.image(400, 100, "logo")
+				this.input.on("pointermove", pointer => {
+					const {
+						position: { x, y },
+					} = pointer
+					console.log(rect)
+					Phaser.Geom.Rectangle.CenterOn(rect, x, y)
+					console.log(rect.contains(this.logo.x, this.logo.y))
+					if (pointer.isDown && rect.contains(this.logo)) {
+						this.physics.moveToObject(this.logo, pointer, 500)
+					} else {
+						this.logo.setVelocity(0, 0)
+					}
+				})
 
-				var logo = this.physics.add.image(400, 100, "logo")
-
-				logo.setVelocity(100, 200)
-				logo.setBounce(1, 1)
-				logo.setCollideWorldBounds(true)
-
-				emitter.startFollow(logo)
+				this.input.on("pointerstilldown", pointer => {
+					this.add.image(pointer.x, pointer.y, "logo")
+				})
+				emitter.startFollow(this.logo)
 			}
+			function update() {}
 		</script>
 	</body>
 </html>
