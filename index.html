@@ -1,57 +1,13 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>A gamekit instance</title>
 	</head>
 	<body>
-		<script>
-			var config = {
-				type: Phaser.AUTO,
-				parent: "phaser-example",
-				width: 1024,
-				height: 600,
-				scene: {
-					preload: preload,
-					create: create,
-				},
-			}
-
-			var game = new Phaser.Game(config)
-
-			function preload() {
-				this.load.setBaseURL("http://labs.phaser.io")
-				this.load.image("logo", "assets/sprites/phaser3-logo.png")
-			}
-
-			function create() {
-				//  Create a stack of random cards
-
-				var frames = 10
-
-				var x = 100
-				var y = 100
-
-				for (var i = 0; i < 64; i++) {
-					var image = this.add.image(x, y, "logo", Phaser.Math.RND.pick(frames)).setInteractive()
-
-					this.input.setDraggable(image)
-					x += 4
-					y += 4
-				}
-
-				this.input.on(
-					"dragstart",
-					function(pointer, gameObject) {
-						this.children.bringToTop(gameObject)
-					},
-					this
-				)
-
-				this.input.on("drag", function(pointer, gameObject, dragX, dragY) {
-					gameObject.x = dragX
-					gameObject.y = dragY
-				})
-			}
+		<canvas width="800" height="600"></canvas>
+		<script src="gamekit.js">
+			console.log("cc")
 		</script>
 	</body>
 </html>
