@@ -60,7 +60,8 @@ Game.onload = function () {
     if (!Game.selectedCard) return
     if (Game.selectedCard.isOnPicker) return
     console.log(Game.selectedCard.isOnPicker)
-    Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
+    Game.selectedCard.goToDefaultPos()
+    //Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
 
     Game.selectedCard.deselect()
   };
@@ -75,6 +76,17 @@ Game.onload = function () {
     Card(1),
   ]
   Game.CardPicker = CardPicker()
+  Game.HandCards = []
+  Game.HandCards = Array.from(Array(5).keys()).map((_, id) => {
+    const card = Card(id)
+    //const pos = card.getHandPosition(5, true)
+    card.pile = "HandCards"
+    return card
+  })
+  Game.HandCards.forEach(card => {
+    Game.scene.add(...Game.HandCards)
+    card.goToDefaultPos()
+  })
 
 
   Game.scene.add(
@@ -109,10 +121,14 @@ Game.onload = function () {
     Game.waitForCardPlay().then(card => console.log("card played", card))
   });
 
-  DE.Inputs.on('keyDown', 'right', function () {
-    Game.waitCardPicker(Game.cards, 2).then(cards => console.log("card picked", cards))
+  DE.Inputs.on('keyDown', 'up', function () {
+    Game.Hand.gameObjects[0].replaceByCard(Game.cards[0])
   });
 
+  DE.Inputs.on('keyDown', 'right', function () {
+    const fn = Game.waitCardPicker
+    fn(Game.cards, 2).then(cards => console.log("card picked", cards))
+  });
 };
 window.Game = Game
 

@@ -99,17 +99,53 @@ export default (id, Game = window.Game) => new DE.GameObject({
       }
     })
   },
-  getHandPosition: function (total = this.parent.gameObjects.length, init = false, id = this.idHand) {
+
+  goToDefaultPos: function () {
+    if (this.pile === "HandCards") {
+      const pos = this.getHandPosition()
+      pos.x += Game.Hand.x
+      pos.y += Game.Hand.y
+      this.rotation = pos.rotation
+      this.moveTo(pos, 200)
+    }
+  },
+
+  replaceByCard: function (replaceBy) {
+    this.deselect()
+    const rot = this.rotation
+    const id = this.idHand
+    this.rotation = replaceBy.rotation
+    replaceBy.rotation = rot
+    return new Promise(resolve => {
+      this.moveTo({ x: replaceBy.x, y: replaceBy.y }, 300, () => {
+        this.idHand = replaceBy.idHand
+        replaceBy.idHand = id
+        const parent = this.parent
+        const parent2 = replaceBy.parent
+        this.parent.remove(this)
+        if (parent) {
+          parent.remove(this)
+          parent.addOne(replaceBy)
+        }
+        if (parent2) {
+          parent2.remove(replaceBy)
+          parent2.addOne(this)
+        }
+      })
+
+      replaceBy.moveTo(this, 300)
+    })
+  },
+
+  getHandPosition: function (total = Game.HandCards && Game.HandCards.length, id = Game.HandCards && Game.HandCards.indexOf(this)) {
+    console.log(total, id)
     const espace = 350
     const out = {
       rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
       x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
       , y: 0
     }
-    if (!init) {
-      out.x += Game.Hand.x
-      out.y = Game.Hand.y
-    }
+    console.log(out)
     return out
   },
   drawLineToMouse: function (start) {
