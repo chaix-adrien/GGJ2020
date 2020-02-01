@@ -75,52 +75,26 @@ Game.onload = function () {
   Game.select = (card) => {
     if (!card) return
     Game.selectedCard = card
-    Game.selectedCard.shake(10, 10, 250)
     Game.selectedCard.zindex = 510
-    setInterval((c) => {
-      if (Game.selectedCard.gameObjects[0].alpha > 0.5) {
-        return clearInterval(c)
-      }
-      Game.selectedCard.gameObjects[0].alpha += 0.05
-    }, 50)
+    Game.selectedCard.setHighlight(0.5)
   }
 
   Game.deselect = () => {
     if (Game.selectedCard) {
       Game.selectedCard.zindex = 500
-      const card = Game.selectedCard
-      setInterval((c) => {
-        if (card.gameObjects[0].alpha <= 0) {
-          return clearInterval(c)
-        }
-        card.gameObjects[0].alpha -= 0.05
-      }, 50)
+      Game.selectedCard.setHighlight(0)
     }
 
     Game.selectedCard = null
   }
   Game.camera.pointerup = function (pos, e) {
-    Game.selectedCard.moveTo(getHandPosition(Game.selectedCard.idHand, Game.Hand.gameObjects.length), 500);
+    if (!Game.selectedCard) return
+    Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
     Game.deselect()
   };
   Game.render.add(Game.camera);
   // Game.render.add( Game.scene );
   Game.hand = []
-  function getHandPosition(id, total, init = false) {
-    console.log(id, total)
-    const espace = 300
-    const out = {
-      rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
-      x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
-      , y: 0
-    }
-    if (!init) {
-      out.x += Game.Hand.x
-      out.y += Game.Hand.y
-    }
-    return out
-
-  }
   const cardNum = 3
   Game.Hand = new DE.GameObject({
     zindex: 500,
@@ -129,10 +103,7 @@ Game.onload = function () {
     interactive: true,
     gameObjects:
       Array.from(Array(cardNum).keys()).map((_, id) => {
-        const pos = getHandPosition(id, cardNum, true)
-        console.log(id, pos)
         return new DE.GameObject({
-          ...pos,
           zindex: 500,
           idHand: id,
           interactive: true,
@@ -140,17 +111,52 @@ Game.onload = function () {
             if (!Game.selectedCard)
               Game.select(e.target)
           },
+          getHighlight: function () {
+            return this.gameObjects[0]
+          },
+          setHighlight: function (toValue, speed = 20) {
+            if (toValue === this.getHighlight().alpha) return
+            this.getHighlight().addAutomatism("setHighlight", "_setHighlight", { interval: speed, value1: toValue === 0 ? -0.05 : toValue })
+          },
+
+          getHandPosition: function (init = false) {
+            const total = Game.Hand.gameObjects.length
+            const id = this.idHand
+            const espace = 300
+            const out = {
+              rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
+              x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
+              , y: 0
+            }
+            if (!init) {
+              out.x += Game.Hand.x
+              out.y += Game.Hand.y
+            }
+            return out
+          },
           renderer: new DE.SpriteRenderer({ spriteName: 'card', scale: 1 }),
           gameObjects: [
             new DE.GameObject({
+              _setHighlight: function (toValue) {
+                if (this.alpha === toValue)
+                  this.removeAutomatism("setHighlight")
+                const newValue = this.alpha + (toValue > this.alpha ? 1 : - 1) * 0.05
+                this.alpha = parseFloat(newValue.toFixed(2))
+              },
               zindex: 460,
               alpha: 0,
-              //automatisms: [['translateAlp', 'getCorrectMoveTo', { interval: 550 }]],
               renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
             })
           ]
         })
       })
+  })
+
+  Game.Hand.gameObjects.forEach((go, id) => {
+    const pos = go.getHandPosition(true)
+    go.x = pos.x
+    go.y = pos.y
+    go.rotation = pos.rotation
   })
 
   Game.update = () => {
