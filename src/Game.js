@@ -37,36 +37,26 @@ Game.onload = function () {
     backgroundImage: 'bg',
   });
   Game.camera.interactive = true;
+  Game.addMouseListener = function (that, cb) {
+    Game.mouseListener = Game.mouseListener || []
+    Game.mouseListener.push({ that, cb })
+  }
+  Game.removeMouseListener = function (cb) {
+    Game.mouseListener = Game.mouseListener.filter(ls => ls.cb !== cb)
+  }
   Game.camera.pointermove = function (pos, e) {
     Game.Pointer.x = pos.x
     Game.Pointer.y = pos.y
-    if (Game.selectedCard)
-      Game.selectedCard.followMouse(pos);
+    if (Game.mouseListener)
+      Game.mouseListener.forEach(ls => ls.cb(ls.that, pos))
   };
   Game.camera.pointerdown = function (pos, e) {
   };
 
-  Game.select = (card) => {
-    if (!card) return
-    Game.selectedCard = card
-    card.select()
-    Game.selectedCard.zindex = 510
-    Game.selectedCard.setHighlight(0.5)
-  }
-
-  Game.deselect = () => {
-    if (Game.selectedCard) {
-      Game.selectedCard.selected = false
-      Game.selectedCard.zindex = 500
-      Game.selectedCard.deselect()
-      Game.selectedCard.setHighlight(0)
-    }
-    Game.selectedCard = null
-  }
   Game.camera.pointerup = function (pos, e) {
     if (!Game.selectedCard) return
     Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
-    Game.deselect()
+    Game.selectedCard.deselect()
   };
   Game.render.add(Game.camera);
   const cardNum = 3
@@ -80,45 +70,20 @@ Game.onload = function () {
     Game.Hand
   );
 
+  Game.waitForCardPlay = () => {
+    return new Promise(resolve => {
+      Game.playWaiting = resolve
+      return resolve.then(card => {
+        Game.playWaiting = null
+        return card
+      })
+    })
+  }
+
   DE.Inputs.on('keyDown', 'left', function () {
-    Game.ship.axes.x = -2;
-  });
-  DE.Inputs.on('keyDown', 'right', function () {
-    Game.ship.axes.x = 2;
-  });
-  DE.Inputs.on('keyUp', 'right', function () {
-    Game.ship.axes.x = 0;
-  });
-  DE.Inputs.on('keyUp', 'left', function () {
-    Game.ship.axes.x = 0;
+    Game.waitForCardPlay().then(card => console.log("card played", card))
   });
 
-  DE.Inputs.on('keyDown', 'up', function () {
-    Game.ship.axes.y = -2;
-  });
-  DE.Inputs.on('keyDown', 'down', function () {
-    Game.ship.axes.y = 2;
-  });
-  DE.Inputs.on('keyUp', 'down', function () {
-    Game.ship.axes.y = 0;
-  });
-  DE.Inputs.on('keyUp', 'up', function () {
-    Game.ship.axes.y = 0;
-  });
-
-  DE.Inputs.on('keyDown', 'fire', function () {
-    Game.ship.addAutomatism('fire', 'fire', { interval: 150 });
-  });
-  DE.Inputs.on('keyUp', 'fire', function () {
-    Game.ship.removeAutomatism('fire');
-  });
-
-  DE.Inputs.on('keyDown', 'deep', function () {
-    Game.ship.z += 0.1;
-  });
-  DE.Inputs.on('keyDown', 'undeep', function () {
-    Game.ship.z -= 0.1;
-  });
 };
 window.Game = Game
 
