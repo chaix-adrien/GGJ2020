@@ -5,6 +5,7 @@ function Engine(cardPool, enemi = [], player){
   this.partie = new Partie(this.cardPool);
   this.partie.giveCard();
   this.enemi = enemi;
+  this.event = [];
 }
 
 Engine.prototype.getCard = function() {
@@ -14,10 +15,11 @@ Engine.prototype.getCard = function() {
 }
 
 Engine.prototype.action = function (cardId, target) {
-  console.log(this);
+this.event = [];
   card = this.partie.play(cardId);
   if (this.player.play(card.cost)){
       card.action(target);
+      this.event = [card, target];
       this.turn += 1;
       if (this.partie.hand.length === 0) {
         this.partie.giveCard();
