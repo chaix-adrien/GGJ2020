@@ -9,30 +9,14 @@
 simple Game declaration
 **/
 import DE from '@dreamirl/dreamengine';
-import Card from "./Card"
 import Pointer from "./Pointer"
+import Hand from "./Hand"
 
 var Game = {};
-
-Game.render = null;
-Game.scene = null;
-Game.ship = null;
-Game.obj = null;
-
-class CardDisplay {
-  constructor() {
-
-  }
-
-}
-
-// init
 Game.init = function () {
   console.log('game init');
-  // DE.config.DEBUG = 1;
+  DE.config.DEBUG = 1;
   // DE.config.DEBUG_LEVEL = 2;
-
-  // Create the renderer before assets start loading
   Game.render = new DE.Render('render', {
     resizeMode: 'stretch-ratio',
     width: 1920,
@@ -42,24 +26,12 @@ Game.init = function () {
     powerPreferences: 'high-performance',
   });
   Game.render.init();
-
   DE.start();
 };
 
 Game.onload = function () {
   console.log('game start');
-
-  // scene
   Game.scene = new DE.Scene();
-  // don't do this because DisplayObject bounds is not set to the render size but to the objects inside the scen
-  // scene.interactive = true;
-  // scene.click = function()
-  // {
-  //   console.log( "clicked", arguments );
-  // }
-
-  // if no Camera, we add the Scene to the render (this can change if I make Camera)
-
   Game.camera = new DE.Camera(0, 0, 1920, 1080, {
     scene: Game.scene,
     backgroundImage: 'bg',
@@ -100,26 +72,9 @@ Game.onload = function () {
   const cardNum = 3
   Game.Pointer = Pointer()
 
-  Game.Hand = new DE.GameObject({
-    zindex: 500,
-    x: 1920 / 2,
-    y: 1080,
-    interactive: true,
-    gameObjects:
-      Array.from(Array(cardNum).keys()).map((_, id) => {
-        return Card(id)
-      })
-  })
-
-  console.log(Game)
+  Game.Hand = Hand()
 
 
-  Game.Hand.gameObjects.forEach((go, id) => {
-    const pos = go.getHandPosition(true)
-    go.x = pos.x
-    go.y = pos.y
-    go.rotation = pos.rotation
-  })
 
   Game.scene.add(
     Game.Hand
