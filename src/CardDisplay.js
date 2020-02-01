@@ -103,7 +103,8 @@ export default (Game = window.Game) => {
       this.zindex = 450
       const dl = () => {
         this.zindex = 450
-
+        if (this.pile)
+          this.pile.removeCard(this)
         this.askToKill()
         Game.removeMouseListener(this.onpointermove)
       }
