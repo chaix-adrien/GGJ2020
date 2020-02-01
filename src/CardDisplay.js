@@ -115,11 +115,16 @@ export default (id, Game = window.Game) => {
     },
 
     play: function (target) {
-      if (target) {
-        this.moveTo(target, 2000)
-        this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
-        this.destroy()
-      }
+      return new Promise(resolve => {
+        if (target) {
+          this.moveTo(target, 2000)
+          this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
+          this.pile.removeCard(this)
+          this.destroy()
+          this.pile.goToDefaultPos()
+          return resolve()
+        }
+      })
     },
 
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {

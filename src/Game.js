@@ -117,17 +117,20 @@ Game.onload = function () {
 
 
   DE.Inputs.on('keyDown', 'left', function () {
-
-    Game.waitForCardPlay().then(({ card, target }) => {
-      console.log("end", card, target)
-      card.play(target)
-    })
-    //Game.Draw.draw(Game.Draw.content[0])
+    function infiniteTurn() {
+      Game.waitForCardPlay().then(({ card, target }) => {
+        console.log("end", card, target)
+        card.play(target).then(infiniteTurn)
+      })
+    }
+    infiniteTurn()
     //Game.Hand.switchCards(Game.Draw.content[0], Game.Hand.content[0])
   });
 
   DE.Inputs.on('keyDown', 'up', function () {
-    Game.Hand.gameObjects[0].replaceByCard(Game.cards[0])
+    Game.Draw.draw(Game.Draw.content[0])
+
+    //    Game.Hand.gameObjects[0].replaceByCard(Game.cards[0])
   });
 
   DE.Inputs.on('keyDown', 'right', function () {
