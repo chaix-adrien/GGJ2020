@@ -75,12 +75,28 @@ Game.onload = function () {
   Game.select = (card) => {
     if (!card) return
     Game.selectedCard = card
+    Game.selectedCard.shake(10, 10, 250)
     Game.selectedCard.zindex = 510
+    setInterval((c) => {
+      if (Game.selectedCard.gameObjects[0].alpha > 0.5) {
+        return clearInterval(c)
+      }
+      Game.selectedCard.gameObjects[0].alpha += 0.05
+    }, 50)
   }
 
   Game.deselect = () => {
-    if (Game.selectedCard)
+    if (Game.selectedCard) {
       Game.selectedCard.zindex = 500
+      const card = Game.selectedCard
+      setInterval((c) => {
+        if (card.gameObjects[0].alpha <= 0) {
+          return clearInterval(c)
+        }
+        card.gameObjects[0].alpha -= 0.05
+      }, 50)
+    }
+
     Game.selectedCard = null
   }
   Game.camera.pointerup = function (pos, e) {
@@ -92,8 +108,12 @@ Game.onload = function () {
   Game.hand = []
   function getHandPosition(id, total, init = false) {
     console.log(id, total)
-    const espace = 250
-    const out = { x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2), y: 0 }
+    const espace = 300
+    const out = {
+      rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
+      x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
+      , y: 0
+    }
     if (!init) {
       out.x += Game.Hand.x
       out.y += Game.Hand.y
@@ -101,7 +121,7 @@ Game.onload = function () {
     return out
 
   }
-  const cardNum = 7
+  const cardNum = 3
   Game.Hand = new DE.GameObject({
     zindex: 500,
     x: 1920 / 2,
@@ -120,10 +140,22 @@ Game.onload = function () {
             if (!Game.selectedCard)
               Game.select(e.target)
           },
-          renderer: new DE.SpriteRenderer({ spriteName: 'player', scale: 1 }),
+          renderer: new DE.SpriteRenderer({ spriteName: 'card', scale: 1 }),
+          gameObjects: [
+            new DE.GameObject({
+              zindex: 460,
+              alpha: 0,
+              //automatisms: [['translateAlp', 'getCorrectMoveTo', { interval: 550 }]],
+              renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
+            })
+          ]
         })
       })
   })
+
+  Game.update = () => {
+    console.log("la")
+  }
 
   Game.scene.add(
     Game.Hand
