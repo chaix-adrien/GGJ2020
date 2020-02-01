@@ -4,13 +4,18 @@ export default (id, Game = window.Game) => new DE.GameObject({
   zindex: 500,
   idHand: id,
   selected: false,
+  isOnPicker: false,
   sendParticles: false,
   interactive: true,
   pointerdown: function (e) {
-    console.log(Game, DE.Game)
-    this.destroy()
-    if (!Game.selectedCard)
-      Game.select(e.target)
+    if (this.isOnPicker) {
+      if (this.parent.getSelection().length + 1 <= this.parent.toPick)
+        this.selected ? this.deselect() : this.select()
+      else
+        this.deselect()
+
+    } else if (!Game.selectedCard)
+      this.select()
   },
   pointerout: function () {
     this.sendParticles = this.select && true
@@ -27,59 +32,87 @@ export default (id, Game = window.Game) => new DE.GameObject({
 
   select: function () {
     this.selected = true
-    console.log(this)
-    this.addAutomatism("createParticle", "createParticle", { interval: 50 })
+    this.zindex = 510
+    this.z = -1
+    this.setHighlight(0.5)
+    if (!this.isOnPicker) {
+      Game.selectedCard = this
+      this.addAutomatism("createParticle", "createParticle", { interval: 50 })
+    }
   },
   deselect: function () {
+    console.log("deselectme")
+    if (Game.selectedCard !== this && !this.isOnPicker) return
     this.selected = false
+    this.zindex = 500
+    this.z = 0
+    this.setHighlight(0)
     this.removeAutomatism("createParticle")
+    this.removeAutomatism("pickerSelectAnim")
+    if (!this.isOnPicker) {
+      Game.selectedCard = null
+    }
+  },
+  init: function () {
+    Game.addMouseListener(this, this.onpointermove)
   },
   getHighlight: function () { return this.gameObjects[0] },
   setHighlight: function (enable, time = 200) { this.getHighlight()[enable ? "enable" : "disable"](time) },
-  followMouse: function (gpos) {
+  automatisms: [["init", "init", { persistent: false }]],
+  onpointermove: function (that, gpos) {
+    if (this.isOnPicker) return
+    if (!that.selected) return
     const pos = { ...gpos }
     const out = { ...gpos }
     const limitZero = 1080 - 300
     const vMouse = {
-      x: (pos.x - (this.parent.x + this.x)),
-      y: (pos.y - (this.parent.y + this.y)),
+      x: (pos.x - (that.parent.x + that.x)),
+      y: (pos.y - (that.parent.y + that.y)),
     }
-    out.y = (this.parent.y + this.y) + vMouse.y / 5
+    out.y = (that.parent.y + that.y) + vMouse.y / 5
     if (out.y < limitZero)
       out.y = limitZero
-    out.x = (this.parent.x + this.x) + vMouse.x / 5
-    this.moveTo(out, 100)
+    out.x = (that.parent.x + that.x) + vMouse.x / 5
+    that.moveTo(out, 100)
   },
 
   _deleteAnim: function (dir) {
-    this.y += dir ? 1 : -1
+    this.y += !dir ? 1 : -1
+    this.z -= 0.1
   },
-
-  destroy: function (direction = 1) {
-    this.fade(1, 0, 1000, false, () => {
+  destroy: function (anim = true, direction) {
+    this.deselect()
+    const dl = () => {
       this.askToKill()
+      Game.removeMouseListener(this.onpointermove)
+    }
+    return new Promise(resolve => {
+      if (anim) {
+        this.fade(1, 0, 1000, false, () => {
+          dl()
+          resolve()
+        })
+        this.addAutomatism("deleteAnim", "_deleteAnim", { interval: 5, value1: direction })
+      } else {
+        setTimeout(resolve, 1000)
+        dl()
+      }
     })
-    this.addAutomatism("deleteAnim", "_deleteAnim", { interval: 100, value1: direction })
   },
-
-  getHandPosition: function (total = this.parent.gameObjects.length, init = false) {
-    const id = this.idHand
-    const espace = 300
+  getHandPosition: function (total = this.parent.gameObjects.length, init = false, id = this.idHand) {
+    const espace = 350
     const out = {
       rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
       x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
       , y: 0
     }
-    console.log(init)
     if (!init) {
       out.x += Game.Hand.x
       out.y = Game.Hand.y
     }
-    console.log(out)
     return out
   },
   drawLineToMouse: function (start) {
-    console.log("emit")
     var particle = new DE.GameObject({
       x: this.parent.x + this.x,
       y: this.parent.y + this.y - 200,
@@ -104,10 +137,9 @@ export default (id, Game = window.Game) => new DE.GameObject({
   renderer: new DE.SpriteRenderer({ spriteName: 'card', scale: 1 }),
   gameObjects: [
     new DE.GameObject({
-      zindex: 460,
       alpha: 0,
-      enable: function (time) { this.fade(this.alpha, 0.5, time) },
-      disable: function (time) { this.fade(this.alpha, 0, time) },
+      enable: function (time) { console.log("enable", this.fade); this.fade(this.alpha, 0.5, time) },
+      disable: function (time) { console.log("disable"); this.fade(this.alpha, 0, time) },
       renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
     })
   ]

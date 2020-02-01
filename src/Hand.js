@@ -8,7 +8,6 @@ export default (Game = window.Game) => new DE.GameObject({
   interactive: true,
   gameObjects:
     Array.from(Array(5).keys()).map((_, id) => {
-      console.log("la")
       const card = Card(id)
       const pos = card.getHandPosition(5, true)
       card.x = pos.x
