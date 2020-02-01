@@ -5,6 +5,7 @@ export default (Game = window.Game) => new DE.GameObject({
   zindex: 800,
   x: 1920 / 2,
   y: 1080 / 2,
+  updated: false,
   currentPool: [],
   pick: function (cardPool, toPick) {
     console.log("pick", cardPool, toPick)
@@ -14,6 +15,7 @@ export default (Game = window.Game) => new DE.GameObject({
       this.addChild(c)
     })
     this.placeCardToPick()
+    Game.scene.add(Game.CardPicker)
   },
 
   placeCardToPick: function () {
