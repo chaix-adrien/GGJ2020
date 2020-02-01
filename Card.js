@@ -3,4 +3,5 @@ function Card(name, description, action, cost){
   this.action = action;
   this.cost = cost;
   this.description = description;
+  this.playable = false;
 }

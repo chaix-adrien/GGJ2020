@@ -27,6 +27,5 @@ Personnage.prototype.playable = function (cost) {
   if (this.mana < cost) {
     return false;
   }
-  this.mana -= cost;
   return true;
 }
