@@ -8,6 +8,7 @@ export default (id, Game = window.Game) => new DE.GameObject({
   interactive: true,
   pointerdown: function (e) {
     console.log(Game, DE.Game)
+    this.destroy()
     if (!Game.selectedCard)
       Game.select(e.target)
   },
@@ -49,8 +50,19 @@ export default (id, Game = window.Game) => new DE.GameObject({
     out.x = (this.parent.x + this.x) + vMouse.x / 5
     this.moveTo(out, 100)
   },
-  getHandPosition: function (init = false) {
-    const total = this.parent.gameObjects.length
+
+  _deleteAnim: function (dir) {
+    this.y += dir ? 1 : -1
+  },
+
+  destroy: function (direction = 1) {
+    this.fade(1, 0, 1000, false, () => {
+      this.askToKill()
+    })
+    this.addAutomatism("deleteAnim", "_deleteAnim", { interval: 100, value1: direction })
+  },
+
+  getHandPosition: function (total = this.parent.gameObjects.length, init = false) {
     const id = this.idHand
     const espace = 300
     const out = {
@@ -58,10 +70,12 @@ export default (id, Game = window.Game) => new DE.GameObject({
       x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
       , y: 0
     }
+    console.log(init)
     if (!init) {
-      out.x += this.parent.x
-      out.y += this.parent.y
+      out.x += Game.Hand.x
+      out.y = Game.Hand.y
     }
+    console.log(out)
     return out
   },
   drawLineToMouse: function (start) {
