@@ -9,6 +9,9 @@
 simple Game declaration
 **/
 import DE from '@dreamirl/dreamengine';
+import Card from "./Card"
+import Pointer from "./Pointer"
+
 var Game = {};
 
 Game.render = null;
@@ -48,7 +51,6 @@ Game.onload = function () {
 
   // scene
   Game.scene = new DE.Scene();
-
   // don't do this because DisplayObject bounds is not set to the render size but to the objects inside the scen
   // scene.interactive = true;
   // scene.click = function()
@@ -64,64 +66,40 @@ Game.onload = function () {
   });
   Game.camera.interactive = true;
   Game.camera.pointermove = function (pos, e) {
+    Game.Pointer.x = pos.x
+    Game.Pointer.y = pos.y
     if (Game.selectedCard)
-      Game.selectedCard.moveTo(pos, 100);
+      Game.selectedCard.followMouse(pos);
   };
   Game.camera.pointerdown = function (pos, e) {
-    //Game.ship.gameObjects[0].moveTo(Game.targetPointer, 500);
-    // Game.targetPointer.shake( 10, 10, 200 );
-    //Game.targetPointer.renderer.setBrightness([1, 0]);
   };
+
   Game.select = (card) => {
     if (!card) return
     Game.selectedCard = card
-    Game.selectedCard.shake(10, 10, 250)
+    card.select()
     Game.selectedCard.zindex = 510
-    setInterval((c) => {
-      if (Game.selectedCard.gameObjects[0].alpha > 0.5) {
-        return clearInterval(c)
-      }
-      Game.selectedCard.gameObjects[0].alpha += 0.05
-    }, 50)
+    Game.selectedCard.setHighlight(0.5)
   }
 
   Game.deselect = () => {
     if (Game.selectedCard) {
+      Game.selectedCard.selected = false
       Game.selectedCard.zindex = 500
-      const card = Game.selectedCard
-      setInterval((c) => {
-        if (card.gameObjects[0].alpha <= 0) {
-          return clearInterval(c)
-        }
-        card.gameObjects[0].alpha -= 0.05
-      }, 50)
+      Game.selectedCard.deselect()
+      Game.selectedCard.setHighlight(0)
     }
-
     Game.selectedCard = null
   }
   Game.camera.pointerup = function (pos, e) {
-    Game.selectedCard.moveTo(getHandPosition(Game.selectedCard.idHand, Game.Hand.gameObjects.length), 500);
+    if (!Game.selectedCard) return
+    Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
     Game.deselect()
   };
   Game.render.add(Game.camera);
-  // Game.render.add( Game.scene );
-  Game.hand = []
-  function getHandPosition(id, total, init = false) {
-    console.log(id, total)
-    const espace = 300
-    const out = {
-      rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
-      x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
-      , y: 0
-    }
-    if (!init) {
-      out.x += Game.Hand.x
-      out.y += Game.Hand.y
-    }
-    return out
-
-  }
   const cardNum = 3
+  Game.Pointer = Pointer()
+
   Game.Hand = new DE.GameObject({
     zindex: 500,
     x: 1920 / 2,
@@ -129,33 +107,19 @@ Game.onload = function () {
     interactive: true,
     gameObjects:
       Array.from(Array(cardNum).keys()).map((_, id) => {
-        const pos = getHandPosition(id, cardNum, true)
-        console.log(id, pos)
-        return new DE.GameObject({
-          ...pos,
-          zindex: 500,
-          idHand: id,
-          interactive: true,
-          pointerdown: function (e) {
-            if (!Game.selectedCard)
-              Game.select(e.target)
-          },
-          renderer: new DE.SpriteRenderer({ spriteName: 'card', scale: 1 }),
-          gameObjects: [
-            new DE.GameObject({
-              zindex: 460,
-              alpha: 0,
-              //automatisms: [['translateAlp', 'getCorrectMoveTo', { interval: 550 }]],
-              renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
-            })
-          ]
-        })
+        return Card(id)
       })
   })
 
-  Game.update = () => {
-    console.log("la")
-  }
+  console.log(Game)
+
+
+  Game.Hand.gameObjects.forEach((go, id) => {
+    const pos = go.getHandPosition(true)
+    go.x = pos.x
+    go.y = pos.y
+    go.rotation = pos.rotation
+  })
 
   Game.scene.add(
     Game.Hand
@@ -201,8 +165,6 @@ Game.onload = function () {
     Game.ship.z -= 0.1;
   });
 };
-
-// just for helping debugging stuff, never do this ;)
-window.Game = Game;
+window.Game = Game
 
 export default Game;

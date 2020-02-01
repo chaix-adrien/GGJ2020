@@ -19,11 +19,11 @@ const Enemy = {
 	},
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient
-		var real_heal = Math.round(healing_value * 1 / this.defense);
+		var real_heal = Math.round(healing_value - (healing_value * this.defense));
 		
 		((this.life + real_heal) > this.max_life) ? 
 			(this.life = this.max_life) : (this.life += real_heal)
-		console.log(this.str())
+		console.log(this.str() + " HEALED")
 	},
 	str() {
 		return this.name + " >> life:" + this.life + " / " + this.max_life
@@ -36,7 +36,7 @@ const Enemy = {
 init_computer = function() {
 	// init CentralUnite
 	Computer.CentralUnite = Object.create(Enemy)
-	Computer.CentralUnite.init('CentralUnite', 120, 0.7, 2)
+	Computer.CentralUnite.init('CentralUnite', 120, 0.7, 3)
 	Computer.CentralUnite.action = function () {
 		// heal most broken component
 		let focused_component = null
@@ -50,24 +50,46 @@ init_computer = function() {
 		}
 		focused_component.heal(this.power)
 	}
-	Computer.CentralUnite.hit = function() {
+	Computer.CentralUnite.hit = function(damage_value) {
 		// deal damage - % defense
 		this.life -= Math.round(damage_value - (damage_value * this.defense))
+		console.log(this.str())
 		Computer.Screen.action()
 	}
 
 	// init Keyboard
 	Computer.Keyboard = Object.create(Enemy)
-	Computer.Keyboard.init('Keyboard', 40, 0.2, 2)
+	Computer.Keyboard.init('Keyboard', 40, 0.2, false)
 	Computer.Keyboard.action = function () {
-		// rewrite card
+		if (this.power)
+			return ;
+		if ((this.life * 100 / this.max_life) <= 20) {
+			if (engine.partie.hand.length > 0) {
+				let cardId = Math.round(Math.random() % engine.partie.hand.length);
+				let card = engine.partie.getRandomCard()
+				engine.partie.replaceCard(cardId, card)
+				this.power = true;
+				console.log("replaced")
+			}
+		}
+	}
+	Computer.Keyboard.heal = function(healing_value) {
+		// heal based on defense lvl. If component is really weak, the heal will be more efficient
+		var real_heal = Math.round(healing_value - (healing_value * this.defense));
+		
+		((this.life + real_heal) > this.max_life) ? 
+			(this.life = this.max_life) : (this.life += real_heal)
+
+		if ((this.life * 100 / this.max_life) > 20) {
+			this.power = false;
+		}
 	}
 
 	// init Screen
 	Computer.Screen = Object.create(Enemy)
 	Computer.Screen.init('Screen', 80, 0.4, 2)
 	Computer.Screen.action = function () {
-		// drain mana
+		engine.player.looseMana(this.power)
 	}
 
 	// init Mouse
@@ -80,8 +102,22 @@ init_computer = function() {
 			return ;
 		if ((this.life * 100 / this.max_life) <= 20) {
 			// if life under 20% mouse steal and delete a player card
-			this.power = true
-			// TODO get player and delete
+			if (engine.partie.hand.length > 0) {
+				let cardId = Math.round(Math.random() % engine.partie.hand.length);
+				engine.partie.deleteCard(cardId);
+				this.power = true;
+			}
+		}
+	}
+	Computer.Mouse.heal = function(healing_value) {
+		// heal based on defense lvl. If component is really weak, the heal will be more efficient
+		var real_heal = Math.round(healing_value - (healing_value * this.defense));
+		
+		((this.life + real_heal) > this.max_life) ? 
+			(this.life = this.max_life) : (this.life += real_heal)
+
+		if ((this.life * 100 / this.max_life) > 20) {
+			this.power = false;
 		}
 	}
 }
