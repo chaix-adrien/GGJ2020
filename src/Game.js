@@ -15,6 +15,7 @@ import CardDisplay from "./CardDisplay"
 import Mob from "./Mob"
 import Pile from "./Pile"
 import CardPicker from "./CardPicker"
+import ParticleDisplay from "./ParticleDisplay"
 
 var Game = {};
 Game.init = function () {
@@ -115,27 +116,35 @@ Game.onload = function () {
     })
   }
 
+  Game.addParticle = (id, pos) => {
+    return new Promise(resolve => {
+      ParticleDisplay(id, pos).then(resolve)
+    })
+  }
+
+  var turn = 0
 
   DE.Inputs.on('keyDown', 'left', function () {
     function infiniteTurn() {
       Game.waitForCardPlay().then(({ card, target }) => {
-        console.log("end", card, target)
-        card.play(target).then(infiniteTurn)
+        card.play(target).then(() => {
+          turn++
+          infiniteTurn()
+        })
       })
     }
     infiniteTurn()
-    //Game.Hand.switchCards(Game.Draw.content[0], Game.Hand.content[0])
   });
 
   DE.Inputs.on('keyDown', 'up', function () {
     Game.Draw.draw(Game.Draw.content[0])
+  });
 
-    //    Game.Hand.gameObjects[0].replaceByCard(Game.cards[0])
+  DE.Inputs.on('keyDown', 'down', function () {
+    Game.Hand.switchCards(Game.Draw.content[0], Game.Hand.content[0])
   });
 
   DE.Inputs.on('keyDown', 'right', function () {
-    const fn = Game.waitCardPicker
-    fn(Game.cards, 2).then(cards => console.log("card picked", cards))
   });
 };
 window.Game = Game

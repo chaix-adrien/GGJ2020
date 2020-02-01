@@ -1,4 +1,5 @@
 import DE from '@dreamirl/dreamengine';
+import ParticleDisplay from "./ParticleDisplay"
 
 export default (id, Game = window.Game) => {
   const out = new DE.GameObject({
@@ -7,6 +8,7 @@ export default (id, Game = window.Game) => {
     selected: false,
     isOnPicker: false,
     sendParticles: false,
+    onPlaySpriteId: "heart",
     interactive: true,
     pointerdown: function (e) {
       if (this.isOnPicker) {
@@ -19,11 +21,13 @@ export default (id, Game = window.Game) => {
         this.select()
     },
     pointerout: function () {
+      this.scaleTo({ x: 1, y: 1 }, 100)
       this.sendParticles = this.select && true
       if (this.selected)
         this.addAutomatism("createParticle", "createParticle", { interval: 50 })
     },
     pointerover: function () {
+      this.scaleTo({ x: 1.2, y: 1.2 }, 100)
       this.removeAutomatism("createParticle")
     },
 
@@ -58,7 +62,10 @@ export default (id, Game = window.Game) => {
       Game.addMouseListener(this, this.onpointermove)
     },
     getHighlight: function () { return this.gameObjects[0] },
-    setHighlight: function (enable, time = 200) { this.getHighlight()[enable ? "enable" : "disable"](time) },
+    setHighlight: function (enable, time = 200) {
+      if (this.getHighlight())
+        this.getHighlight()[enable ? "enable" : "disable"](time)
+    },
     automatisms: [["init", "init", { persistent: false }]],
     onpointermove: function (that, gpos) {
       if (this.isOnPicker) return
@@ -83,7 +90,10 @@ export default (id, Game = window.Game) => {
     },
     destroy: function (anim = true, direction) {
       this.deselect()
+      this.zindex = 450
       const dl = () => {
+        this.zindex = 450
+
         this.askToKill()
         Game.removeMouseListener(this.onpointermove)
       }
@@ -120,8 +130,10 @@ export default (id, Game = window.Game) => {
           this.moveTo(target, 2000)
           this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
           this.pile.removeCard(this)
+          Game.addParticle(this.onPlaySpriteId, target)
           this.destroy()
           this.pile.goToDefaultPos()
+
           return resolve()
         }
       })
