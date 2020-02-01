@@ -1,5 +1,4 @@
 import DE from '@dreamirl/dreamengine';
-import Card from "./Card"
 const textSelectNumber = new DE.TextRenderer('', {
   textStyle: {
     fill: 'black',

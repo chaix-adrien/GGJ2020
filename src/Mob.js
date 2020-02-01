@@ -22,10 +22,10 @@ export default (Game = window.Game) => new DE.GameObject({
         this.scale = { x: 1.2, y: 1.2 }
       },
       pointerup: function () {
-        console.log(Game.waitingForPlay)
         this.pointerout()
         if (Game.selectedCard && Game.waitingForPlay) {
-          Game.waitingForPlay(Game.selectedCard)
+          console.log("send", this)
+          Game.waitingForPlay(Game.selectedCard, this)
         }
       },
       pointerout: function () {

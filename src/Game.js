@@ -11,8 +11,9 @@ simple Game declaration
 import DE from '@dreamirl/dreamengine';
 import Pointer from "./Pointer"
 import Hand from "./Hand"
-import Card from "./Card"
+import CardDisplay from "./CardDisplay"
 import Mob from "./Mob"
+import Pile from "./Pile"
 import CardPicker from "./CardPicker"
 
 var Game = {};
@@ -66,40 +67,38 @@ Game.onload = function () {
     Game.selectedCard.deselect()
   };
   Game.render.add(Game.camera);
-  const cardNum = 3
   Game.Pointer = Pointer()
 
-  Game.Hand = Hand()
   Game.Mob = Mob()
-  Game.cards = [
-    Card(0),
-    Card(1),
-  ]
+
   Game.CardPicker = CardPicker()
-  Game.HandCards = []
-  Game.HandCards = Array.from(Array(5).keys()).map((_, id) => {
-    const card = Card(id)
-    //const pos = card.getHandPosition(5, true)
-    card.pile = "HandCards"
-    return card
+  Game.Hand = Pile("Hand", {
+    x: 1920 / 2,
+    y: 1080
   })
-  Game.HandCards.forEach(card => {
-    Game.scene.add(...Game.HandCards)
-    card.goToDefaultPos()
+  Game.Draw = Pile("Draw", {
+    x: 100,
+    y: 1080 / 2
   })
 
+  Array.from(Array(5).keys()).forEach((_, id) => Game.Hand.addCard(CardDisplay(id)))
+  Game.Hand.goToDefaultPos()
 
+  Array.from(Array(5).keys()).forEach((_, id) => Game.Draw.addCard(CardDisplay(id)))
+  Game.Draw.goToDefaultPos()
   Game.scene.add(
     Game.Hand,
     Game.Mob,
-    ...Game.cards,
+    Game.Hand,
+    Game.Draw
   );
 
   Game.waitForCardPlay = () => {
     return new Promise(resolve => {
-      Game.waitingForPlay = (card) => {
-        Game.waitForCardPlay = null
-        return resolve(card)
+      Game.waitingForPlay = (card, target) => {
+        console.log("ici", card, target)
+        Game.waitingForPlay = null
+        return resolve({ card, target })
       }
       return resolve
     })
@@ -118,7 +117,13 @@ Game.onload = function () {
 
 
   DE.Inputs.on('keyDown', 'left', function () {
-    Game.waitForCardPlay().then(card => console.log("card played", card))
+
+    Game.waitForCardPlay().then(({ card, target }) => {
+      console.log("end", card, target)
+      card.play(target)
+    })
+    //Game.Draw.draw(Game.Draw.content[0])
+    //Game.Hand.switchCards(Game.Draw.content[0], Game.Hand.content[0])
   });
 
   DE.Inputs.on('keyDown', 'up', function () {
