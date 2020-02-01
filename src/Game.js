@@ -48,7 +48,6 @@ Game.onload = function () {
 
   // scene
   Game.scene = new DE.Scene();
-  Game.particles = []
   // don't do this because DisplayObject bounds is not set to the render size but to the objects inside the scen
   // scene.interactive = true;
   // scene.click = function()
@@ -98,10 +97,14 @@ Game.onload = function () {
   const cardNum = 3
   Game.Pointer = new DE.GameObject({
     interactive: true,
-    pointerover: function () {
-      //   this.askToKill()
+    isInRectBox: function (pos, range, translate = { x: 0, y: 0 }) {
+      const midRange = range / 2
+      const pointer = { x: this.x + translate.x, y: this.y + translate.y }
+      if (pos.x > pointer.x - midRange && pos.x < pointer.x + midRange &&
+        pos.y > pointer.y - midRange && pos.y < pointer.y + midRange)
+        return true
+      return false
     },
-    //rotation: Math.random() * Math.PI,
     renderer: new DE.SpriteRenderer({ spriteName: 'particle', scale: 1 }),
   });
 
@@ -110,14 +113,6 @@ Game.onload = function () {
     x: 1920 / 2,
     y: 1080,
     interactive: true,
-    onupdate: function () {
-      console.log("le")
-      Game.particles = Game.particles.filter(p => {
-
-        return !p._destroyed ? p.moveTo(Game.mouse, 500) : false
-      })
-      return false
-    },
     gameObjects:
       Array.from(Array(cardNum).keys()).map((_, id) => {
         return new DE.GameObject({
@@ -132,6 +127,8 @@ Game.onload = function () {
           },
           pointerout: function () {
             this.sendParticles = this.select && true
+            if (this.selected)
+              this.addAutomatism("createParticle", "createParticle", { interval: 50 })
           },
           pointerover: function () {
             this.removeAutomatism("createParticle")
@@ -151,13 +148,19 @@ Game.onload = function () {
           },
           getHighlight: function () { return this.gameObjects[0] },
           setHighlight: function (enable, time = 200) { this.getHighlight()[enable ? "enable" : "disable"](time) },
-          followMouse: function (pos) {
-            const limitY = 1080 - 300
-            if (pos.y < limitY) {
-              pos.x = Game.Hand.x + this.x
-              pos.y = limitY
+          followMouse: function (gpos) {
+            const pos = { ...gpos }
+            const out = { ...gpos }
+            const limitZero = 1080 - 300
+            const vMouse = {
+              x: (pos.x - (Game.Hand.x + this.x)),
+              y: (pos.y - (Game.Hand.y + this.y)),
             }
-            this.moveTo(pos, 500)
+            out.y = (Game.Hand.y + this.y) + vMouse.y / 5
+            if (out.y < limitZero)
+              out.y = limitZero
+            out.x = (Game.Hand.x + this.x) + vMouse.x / 5
+            this.moveTo(out, 100)
           },
           getHandPosition: function (init = false) {
             const total = Game.Hand.gameObjects.length
@@ -178,20 +181,23 @@ Game.onload = function () {
             console.log("emit")
             var particle = new DE.GameObject({
               x: Game.Hand.x + this.x,
-              y: Game.Hand.y + this.y,
-              interactive: true,
-              moveMe: function (target) {
-                this.moveTo(target, 100)
-              },
-              automatisms: [['moveMe', 'moveMe', { value1: Game.Pointer }]],
+              y: Game.Hand.y + this.y - 200,
+              updateMe: function (target) {
+                this.moveTo(target, 150)
+                if (Game.Pointer.isInRectBox(this, 100))
+                  this.askToKill()
 
-              pointerover: function () {
-                this.askToKill()
               },
+              automatisms: [['updateMe', 'updateMe', { value1: Game.Pointer }]],
+
+              /*              pointerover: function () {
+                              this.updatable = false
+                              this.interactive = false
+                              this.askToKill()
+                            },*/
               rotation: Math.random() * Math.PI,
               renderer: new DE.SpriteRenderer({ spriteName: 'particle', scale: 1 }),
             });
-            Game.particles.push(particle)
             Game.scene.add(particle);
           },
           renderer: new DE.SpriteRenderer({ spriteName: 'card', scale: 1 }),
