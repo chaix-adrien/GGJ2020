@@ -8,8 +8,10 @@ export default (id, Game = window.Game) => new DE.GameObject({
   sendParticles: false,
   interactive: true,
   pointerdown: function (e) {
-    console.log(Game.selectedCard)
-    if (!Game.selectedCard)
+    if (this.isOnPicker) {
+      console.log(this.selected)
+      this.selected ? this.deselect() : this.select()
+    } else if (!Game.selectedCard)
       this.select()
   },
   pointerout: function () {
@@ -29,23 +31,26 @@ export default (id, Game = window.Game) => new DE.GameObject({
     this.selected = true
     this.zindex = 510
     this.z = -1
-    console.log("select")
     this.setHighlight(0.5)
     if (this.isOnPicker) {
-
+      //this.addAutomatism("pickerSelectAnim", "_pickerSelectAnim")
     } else {
       Game.selectedCard = this
       this.addAutomatism("createParticle", "createParticle", { interval: 50 })
     }
   },
   deselect: function () {
-    if (Game.selectedCard !== this) return
-    Game.selectedCard = null
+    console.log("deselectme")
+    if (Game.selectedCard !== this && !this.isOnPicker) return
     this.selected = false
     this.zindex = 500
     this.z = 0
     this.setHighlight(0)
     this.removeAutomatism("createParticle")
+    this.removeAutomatism("pickerSelectAnim")
+    if (!this.isOnPicker) {
+      Game.selectedCard = null
+    }
   },
   init: function () {
     Game.addMouseListener(this, this.onpointermove)

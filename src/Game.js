@@ -11,6 +11,9 @@ simple Game declaration
 import DE from '@dreamirl/dreamengine';
 import Pointer from "./Pointer"
 import Hand from "./Hand"
+import Card from "./Card"
+import Mob from "./Mob"
+import CardPicker from "./CardPicker"
 
 var Game = {};
 Game.init = function () {
@@ -55,7 +58,10 @@ Game.onload = function () {
 
   Game.camera.pointerup = function (pos, e) {
     if (!Game.selectedCard) return
+    if (Game.selectedCard.isOnPicker) return
+    console.log(Game.selectedCard.isOnPicker)
     Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
+
     Game.selectedCard.deselect()
   };
   Game.render.add(Game.camera);
@@ -63,25 +69,48 @@ Game.onload = function () {
   Game.Pointer = Pointer()
 
   Game.Hand = Hand()
-
+  Game.Mob = Mob()
+  Game.cards = [
+    Card(0),
+    Card(1),
+  ]
+  Game.CardPicker = CardPicker()
 
 
   Game.scene.add(
-    Game.Hand
+    Game.Hand,
+    Game.Mob,
+    ...Game.cards,
   );
 
   Game.waitForCardPlay = () => {
     return new Promise(resolve => {
-      Game.playWaiting = resolve
-      return resolve.then(card => {
-        Game.playWaiting = null
-        return card
-      })
+      Game.waitingForPlay = (card) => {
+        Game.waitForCardPlay = null
+        return resolve(card)
+      }
+      return resolve
     })
   }
 
+  Game.waitCardPicker = (cardPool, toPick) => {
+    Game.CardPicker.pick(cardPool, toPick)
+    return new Promise(resolve => {
+      Game.waitingForPick = (cards) => {
+        Game.waitingForPick = null
+        return resolve(cards)
+      }
+      return resolve
+    })
+  }
+
+
   DE.Inputs.on('keyDown', 'left', function () {
     Game.waitForCardPlay().then(card => console.log("card played", card))
+  });
+
+  DE.Inputs.on('keyDown', 'right', function () {
+    Game.waitCardPicker(Game.cards, 1).then(cards => console.log("card picked", cards))
   });
 
 };
