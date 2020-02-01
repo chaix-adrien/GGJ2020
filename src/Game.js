@@ -48,7 +48,7 @@ Game.onload = function () {
 
   // scene
   Game.scene = new DE.Scene();
-
+  Game.particles = []
   // don't do this because DisplayObject bounds is not set to the render size but to the objects inside the scen
   // scene.interactive = true;
   // scene.click = function()
@@ -64,27 +64,29 @@ Game.onload = function () {
   });
   Game.camera.interactive = true;
   Game.camera.pointermove = function (pos, e) {
+    Game.Pointer.x = pos.x
+    Game.Pointer.y = pos.y
     if (Game.selectedCard)
-      Game.selectedCard.moveTo(pos, 100);
+      Game.selectedCard.followMouse(pos);
   };
   Game.camera.pointerdown = function (pos, e) {
-    //Game.ship.gameObjects[0].moveTo(Game.targetPointer, 500);
-    // Game.targetPointer.shake( 10, 10, 200 );
-    //Game.targetPointer.renderer.setBrightness([1, 0]);
   };
+
   Game.select = (card) => {
     if (!card) return
     Game.selectedCard = card
+    card.select()
     Game.selectedCard.zindex = 510
     Game.selectedCard.setHighlight(0.5)
   }
 
   Game.deselect = () => {
     if (Game.selectedCard) {
+      Game.selectedCard.selected = false
       Game.selectedCard.zindex = 500
+      Game.selectedCard.deselect()
       Game.selectedCard.setHighlight(0)
     }
-
     Game.selectedCard = null
   }
   Game.camera.pointerup = function (pos, e) {
@@ -93,32 +95,70 @@ Game.onload = function () {
     Game.deselect()
   };
   Game.render.add(Game.camera);
-  // Game.render.add( Game.scene );
-  Game.hand = []
   const cardNum = 3
+  Game.Pointer = new DE.GameObject({
+    interactive: true,
+    pointerover: function () {
+      //   this.askToKill()
+    },
+    //rotation: Math.random() * Math.PI,
+    renderer: new DE.SpriteRenderer({ spriteName: 'particle', scale: 1 }),
+  });
+
   Game.Hand = new DE.GameObject({
     zindex: 500,
     x: 1920 / 2,
     y: 1080,
     interactive: true,
+    onupdate: function () {
+      console.log("le")
+      Game.particles = Game.particles.filter(p => {
+
+        return !p._destroyed ? p.moveTo(Game.mouse, 500) : false
+      })
+      return false
+    },
     gameObjects:
       Array.from(Array(cardNum).keys()).map((_, id) => {
         return new DE.GameObject({
           zindex: 500,
           idHand: id,
+          selected: false,
+          sendParticles: false,
           interactive: true,
           pointerdown: function (e) {
             if (!Game.selectedCard)
               Game.select(e.target)
           },
-          getHighlight: function () {
-            return this.gameObjects[0]
+          pointerout: function () {
+            this.sendParticles = this.select && true
           },
-          setHighlight: function (toValue, speed = 20) {
-            if (toValue === this.getHighlight().alpha) return
-            this.getHighlight().addAutomatism("setHighlight", "_setHighlight", { interval: speed, value1: toValue === 0 ? -0.05 : toValue })
+          pointerover: function () {
+            this.removeAutomatism("createParticle")
           },
 
+          createParticle: function () {
+            this.drawLineToMouse()
+          },
+
+          select: function () {
+            this.selected = true
+            this.addAutomatism("createParticle", "createParticle", { interval: 50 })
+          },
+          deselect: function () {
+            this.selected = false
+            this.removeAutomatism("createParticle")
+          },
+          getHighlight: function () { return this.gameObjects[0] },
+          setHighlight: function (enable, time = 200) { this.getHighlight()[enable ? "enable" : "disable"](time) },
+          followMouse: function (pos) {
+            const limitY = 1080 - 300
+            if (pos.y < limitY) {
+              pos.x = Game.Hand.x + this.x
+              pos.y = limitY
+            }
+            this.moveTo(pos, 500)
+          },
           getHandPosition: function (init = false) {
             const total = Game.Hand.gameObjects.length
             const id = this.idHand
@@ -134,17 +174,33 @@ Game.onload = function () {
             }
             return out
           },
+          drawLineToMouse: function (start) {
+            console.log("emit")
+            var particle = new DE.GameObject({
+              x: Game.Hand.x + this.x,
+              y: Game.Hand.y + this.y,
+              interactive: true,
+              moveMe: function (target) {
+                this.moveTo(target, 100)
+              },
+              automatisms: [['moveMe', 'moveMe', { value1: Game.Pointer }]],
+
+              pointerover: function () {
+                this.askToKill()
+              },
+              rotation: Math.random() * Math.PI,
+              renderer: new DE.SpriteRenderer({ spriteName: 'particle', scale: 1 }),
+            });
+            Game.particles.push(particle)
+            Game.scene.add(particle);
+          },
           renderer: new DE.SpriteRenderer({ spriteName: 'card', scale: 1 }),
           gameObjects: [
             new DE.GameObject({
-              _setHighlight: function (toValue) {
-                if (this.alpha === toValue)
-                  this.removeAutomatism("setHighlight")
-                const newValue = this.alpha + (toValue > this.alpha ? 1 : - 1) * 0.05
-                this.alpha = parseFloat(newValue.toFixed(2))
-              },
               zindex: 460,
               alpha: 0,
+              enable: function (time) { this.fade(this.alpha, 0.5, time) },
+              disable: function (time) { this.fade(this.alpha, 0, time) },
               renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
             })
           ]
@@ -152,16 +208,15 @@ Game.onload = function () {
       })
   })
 
+  console.log(Game)
+
+
   Game.Hand.gameObjects.forEach((go, id) => {
     const pos = go.getHandPosition(true)
     go.x = pos.x
     go.y = pos.y
     go.rotation = pos.rotation
   })
-
-  Game.update = () => {
-    console.log("la")
-  }
 
   Game.scene.add(
     Game.Hand
@@ -208,7 +263,5 @@ Game.onload = function () {
   });
 };
 
-// just for helping debugging stuff, never do this ;)
-window.Game = Game;
 
 export default Game;
