@@ -82,16 +82,23 @@ Game.onload = function () {
     y: 1080 / 2
   })
 
-  Array.from(Array(5).keys()).forEach((_, id) => Game.Hand.addCard(CardDisplay(id)))
+  Game.Picker = Pile("Picker", {
+    x: 1920 / 2,
+    y: 1080 / 2
+  })
+
+  Array.from(Array(5).keys()).forEach((_, id) => Game.Hand.addCard(CardDisplay()))
   Game.Hand.goToDefaultPos()
 
-  Array.from(Array(5).keys()).forEach((_, id) => Game.Draw.addCard(CardDisplay(id)))
+  Array.from(Array(5).keys()).forEach((_, id) => Game.Draw.addCard(CardDisplay()))
   Game.Draw.goToDefaultPos()
   Game.scene.add(
     Game.Hand,
     Game.Mob,
     Game.Hand,
-    Game.Draw
+    Game.Draw,
+    Game.Picker,
+
   );
 
   Game.waitForCardPlay = () => {
@@ -118,7 +125,8 @@ Game.onload = function () {
 
   Game.addParticle = (id, pos) => {
     return new Promise(resolve => {
-      ParticleDisplay(id, pos).then(resolve)
+      ParticleDisplay(id, pos)
+      return resolve()
     })
   }
 
@@ -126,12 +134,23 @@ Game.onload = function () {
 
   DE.Inputs.on('keyDown', 'left', function () {
     function infiniteTurn() {
-      Game.waitForCardPlay().then(({ card, target }) => {
-        card.play(target).then(() => {
+      if (!(turn % 3))
+        Game.waitCardPicker(Game.Draw.content, 1).then((cards) => {
+          console.log("card", cards)
           turn++
+          //cards[0].play(Game.Mob)
+          //Game.Hand.switchCards(cards[1], Game.Hand.content[0])
+          cards[0].destroy()
           infiniteTurn()
+
         })
-      })
+      else
+        Game.waitForCardPlay().then(({ card, target }) => {
+          card.play(target).then(() => {
+            turn++
+            infiniteTurn()
+          })
+        })
     }
     infiniteTurn()
   });

@@ -1,15 +1,17 @@
 import DE from '@dreamirl/dreamengine';
 
-export default (key, pos, Game = window.Game) => {
+export default (key, pos = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Game) => {
   return new DE.GameObject({
     zindex: 500,
     ...pos,
     key: key,
     content: [],
     addCard: function (card, last = true, anim = true) {
+      console.log("add to", this.key, card)
       if (card.pile === this || !card) return
       if (card.pile)
         card.pile.removeCard(card)
+      console.log("add card to pile", key)
       card.pile = this
       last ? this.content.unshift(card) : this.content.push(card)
 

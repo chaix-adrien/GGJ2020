@@ -3,7 +3,7 @@ import DE from '@dreamirl/dreamengine';
 export default (Game = window.Game) => new DE.GameObject({
   interactive: true,
   x: 1920 / 2,
-  y: 1080 / 2,
+  y: 200,
   targeted: false,
   pointerover: function () {
     if (Game.selectedCard && !this.targeted) {

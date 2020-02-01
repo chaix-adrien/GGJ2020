@@ -1,19 +1,20 @@
 import DE from '@dreamirl/dreamengine';
 import ParticleDisplay from "./ParticleDisplay"
 
-export default (id, Game = window.Game) => {
+export default (Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
-    idHand: id,
     selected: false,
-    isOnPicker: false,
+    pile: Game.Picker,
     sendParticles: false,
     onPlaySpriteId: "heart",
     interactive: true,
     pointerdown: function (e) {
-      if (this.isOnPicker) {
-        if (this.parent.getSelection().length + 1 <= this.parent.toPick)
+      if (this.pile === Game.Picker) {
+        if (Game.CardPicker.getSelection().length + 1 <= Game.CardPicker.toPick) {
+          console.log("is selected", !this.selected)
           this.selected ? this.deselect() : this.select()
+        }
         else
           this.deselect()
 
@@ -21,6 +22,7 @@ export default (id, Game = window.Game) => {
         this.select()
     },
     pointerout: function () {
+      if (this.pile === Game.Picker && this.selected) return
       this.scaleTo({ x: 1, y: 1 }, 100)
       this.sendParticles = this.select && true
       if (this.selected)
@@ -37,24 +39,31 @@ export default (id, Game = window.Game) => {
 
     select: function () {
       this.selected = true
-      this.zindex = 510
-      this.z = -1
       this.setHighlight(0.5)
-      if (!this.isOnPicker) {
+      this.z = -1
+      if (this.pile === Game.Picker) {
+
+      }
+      if (this.pile === Game.Hand) {
+        this.zindex = 510
         Game.selectedCard = this
         this.addAutomatism("createParticle", "createParticle", { interval: 50 })
       }
     },
     deselect: function () {
       console.log("deselectme")
-      if (Game.selectedCard !== this && !this.isOnPicker) return
+      if (Game.selectedCard !== this && this.pile !== Game.Picker) return
       this.selected = false
-      this.zindex = 500
       this.z = 0
       this.setHighlight(0)
-      this.removeAutomatism("createParticle")
-      this.removeAutomatism("pickerSelectAnim")
-      if (!this.isOnPicker) {
+      if (this.pile === Game.Picker) {
+
+      }
+      if (this.pile === Game.Hand) {
+
+        this.zindex = 500
+        this.removeAutomatism("createParticle")
+        this.removeAutomatism("pickerSelectAnim")
         Game.selectedCard = null
       }
     },
@@ -68,7 +77,8 @@ export default (id, Game = window.Game) => {
     },
     automatisms: [["init", "init", { persistent: false }]],
     onpointermove: function (that, gpos) {
-      if (this.isOnPicker) return
+      if (!that.pile) return
+      if (that.pile === Game.Picker) return
       if (!that.selected) return
       const pos = { ...gpos }
       const out = { ...gpos }
@@ -118,8 +128,14 @@ export default (id, Game = window.Game) => {
         pos.y += Game.Hand.y
         this.rotation = pos.rotation
         this.moveTo(pos, 200)
-      } else {
+      } else if (this.pile === Game.Draw) {
         this.moveTo(this.pile, 200)
+      } else if (this.pile === Game.Picker) {
+        const pos = this.getHandPosition(Game.Picker.content.length, Game.Picker.content.indexOf(this))
+        pos.x += Game.Picker.x
+        pos.y += Game.Picker.y
+        this.rotation = pos.rotation
+        this.moveTo(pos, 200)
       }
 
     },
@@ -140,6 +156,7 @@ export default (id, Game = window.Game) => {
     },
 
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {
+      console.log("getHAndppos", total, id)
       const espace = 350
       const out = {
         rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),

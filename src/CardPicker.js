@@ -16,41 +16,44 @@ export default (Game = window.Game) => new DE.GameObject({
   y: 1080 / 2,
   updated: false,
   currentPool: [],
-  toPicl: 0,
+  lastPills: null,
+  toPick: 0,
   getSelection: function () {
     return this.currentPool.filter(c => c.selected)
   },
   pick: function (cardPool, toPick) {
+    if (this.toPick !== 0) return
     console.log("pick", cardPool, toPick)
     this.currentPool = cardPool
-    this.toPick = toPick
-    console.log(textSelectNumber)
-    textSelectNumber.text = "Selectionnez " + toPick + " carte" + (toPick > 1 ? "s" : "")
-    //this.renderers[1].text = toPick
-    cardPool.forEach(c => {
-      c.isOnPicker = true
-      this.addChild(c)
+    this.lastPills = this.currentPool.map(c => c.pile)
+
+    this.currentPool.forEach(c => {
+      c.zindex = 1500
+      Game.Picker.addCard(c, true, false)
     })
-    this.placeCardToPick()
+    this.toPick = toPick
+    Game.Picker.goToDefaultPos()
+    textSelectNumber.text = "Selectionnez " + toPick + " carte" + (toPick > 1 ? "s" : "")
     Game.scene.add(Game.CardPicker)
   },
   validate: function () {
     if (!Game.waitingForPick) return
     if (this.getSelection().length !== this.toPick) return
+
     this.toPick = 0
+    const out = [...this.getSelection()]
+    this.currentPool.forEach(c => {
+      c.deselect()
+    })
+    this.currentPool.forEach((c, id) => {
+      this.lastPills[id].addCard(c)
+    })
     this.currentPool = []
-    const selection = this.getSelection()
     Game.scene.remove(Game.CardPicker)
-    Game.waitingForPick(selection)
+    Game.waitingForPick(out)
   },
 
-  placeCardToPick: function () {
-    this.currentPool.forEach((c, id) => {
-      const pos = c.getHandPosition(this.currentPool.length, true, id)
-      c.x = pos.x
-      c.y = pos.y
-    })
-  },
+
 
   gameObjects: [
     new DE.GameObject({
