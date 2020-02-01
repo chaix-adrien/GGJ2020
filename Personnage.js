@@ -23,6 +23,14 @@ Personnage.prototype.heal = function (heal){
   }
 }
 
+Personnage.prototype.play = function(cost) {
+  if (this.playable(cost)) {
+    this.mana -= cost;
+    return true;
+  }
+  return false;
+}
+
 Personnage.prototype.playable = function (cost) {
   if (this.mana < cost) {
     return false;

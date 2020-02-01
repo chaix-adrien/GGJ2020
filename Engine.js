@@ -15,6 +15,10 @@ Engine.prototype.getCard = function() {
 
 Engine.prototype.action = function (cardId, target) {
   card = this.partie.play(cardId);
+  if (this.player.play(card.cost)){
+      card.action(target);
+  }
+
 }
 
 Engine.prototype.end = function() {
