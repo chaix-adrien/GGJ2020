@@ -9,8 +9,11 @@ export default (id, Game = window.Game) => new DE.GameObject({
   interactive: true,
   pointerdown: function (e) {
     if (this.isOnPicker) {
-      console.log(this.selected)
-      this.selected ? this.deselect() : this.select()
+      if (this.parent.getSelection().length + 1 <= this.parent.toPick)
+        this.selected ? this.deselect() : this.select()
+      else
+        this.deselect()
+
     } else if (!Game.selectedCard)
       this.select()
   },
@@ -32,9 +35,7 @@ export default (id, Game = window.Game) => new DE.GameObject({
     this.zindex = 510
     this.z = -1
     this.setHighlight(0.5)
-    if (this.isOnPicker) {
-      //this.addAutomatism("pickerSelectAnim", "_pickerSelectAnim")
-    } else {
+    if (!this.isOnPicker) {
       Game.selectedCard = this
       this.addAutomatism("createParticle", "createParticle", { interval: 50 })
     }

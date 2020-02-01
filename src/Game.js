@@ -110,7 +110,7 @@ Game.onload = function () {
   });
 
   DE.Inputs.on('keyDown', 'right', function () {
-    Game.waitCardPicker(Game.cards, 1).then(cards => console.log("card picked", cards))
+    Game.waitCardPicker(Game.cards, 2).then(cards => console.log("card picked", cards))
   });
 
 };
