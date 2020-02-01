@@ -1,4 +1,3 @@
-var Computer = {}
 
 const Enemy = {
 	init(name, max_life, defense, power) {
@@ -9,13 +8,14 @@ const Enemy = {
 		this.defense = defense
 		this.power = power
 	},
-	action(power) {
-		console.log(this.str() + " undefined action")
+	validation(engine) {
+		console.log(this.name + " undefined validation")
+		return true
 	},
-	hit(damage_value) {
+	hit(engine) {
 		// deal damage - % defense
+		return ;
 		this.life -= Math.round(damage_value - (damage_value * this.defense))
-		console.log(this.str())
 	},
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient
@@ -23,7 +23,6 @@ const Enemy = {
 		
 		((this.life + real_heal) > this.max_life) ? 
 			(this.life = this.max_life) : (this.life += real_heal)
-		console.log(this.str() + " HEALED")
 	},
 	str() {
 		return this.name + " >> life:" + this.life + " / " + this.max_life
@@ -33,91 +32,129 @@ const Enemy = {
 	}
 }
 
-init_computer = function() {
-	// init CentralUnite
-	Computer.CentralUnite = Object.create(Enemy)
-	Computer.CentralUnite.init('CentralUnite', 120, 0.7, 3)
-	Computer.CentralUnite.action = function () {
-		// heal most broken component
-		let focused_component = null
-		for (let name in Computer) {
-			// we're searching for lowest component life percentage
-			if (!focused_component && Computer[name].is_alive())
-				focused_component = Computer[name] 
-			else if	(Computer[name].is_alive() && (focused_component.life * 100 / focused_component.max_life) >
-				(Computer[name].life * 100 / Computer[name].max_life))
-				focused_component = Computer[name] 
-		}
-		focused_component.heal(this.power)
-	}
-	Computer.CentralUnite.hit = function(damage_value) {
-		// deal damage - % defense
-		this.life -= Math.round(damage_value - (damage_value * this.defense))
-		console.log(this.str())
-		Computer.Screen.action()
-	}
+// int Central Unite
+var CentralUnite = Object.create(Enemy)
 
-	// init Keyboard
-	Computer.Keyboard = Object.create(Enemy)
-	Computer.Keyboard.init('Keyboard', 40, 0.2, false)
-	Computer.Keyboard.action = function () {
-		if (this.power)
-			return ;
-		if ((this.life * 100 / this.max_life) <= 20) {
-			if (engine.partie.hand.length > 0) {
-				let cardId = Math.round(Math.random() % engine.partie.hand.length);
-				let card = engine.partie.getRandomCard()
-				engine.partie.replaceCard(cardId, card)
-				this.power = true;
-				console.log("replaced")
-			}
-		}
+CentralUnite.action_validation = function(engine) {
+	return (Computer[this.name].is_alive() && engine.turn % 3 == 2)
+}
+CentralUnite.action = function (engine) {
+	// heal most broken component
+	let fenemy = null
+	for (let name in engine.enemies) {
+		// we're searching for lowest component life percentage
+		if (!fenemy && engine.enemies[name].is_alive())
+			fenemy = engine.enemies[name] 
+		else if	(engine.enemies[name].is_alive() && (fenemy.life * 100 / fenemy.max_life) >
+			(engine.enemies[name].life * 100 / engine.enemies[name].max_life))
+			fenemy = engine.enemies[name] 
 	}
-	Computer.Keyboard.heal = function(healing_value) {
-		// heal based on defense lvl. If component is really weak, the heal will be more efficient
-		var real_heal = Math.round(healing_value - (healing_value * this.defense));
-		
-		((this.life + real_heal) > this.max_life) ? 
-			(this.life = this.max_life) : (this.life += real_heal)
+	if (!fenemy)
+		return []
+	fenemy.heal(Computer[this.name].power)
+	return ["execute heal", fenemy.name]
+}
+CentralUnite.hit_validation = function(engine) {
+	return (Computer[this.name].is_alive() && engine.turn % 3 != 2)
+}
+CentralUnite.hit = function (engine, damage_value=4) {
+	Computer[this.name].life -= Math.round(damage_value - (damage_value * Computer[this.name].defense))
+	if (Computer["Screen"].validation(engine))
+		return Screen.action(engine)
+	return []
+}
 
-		if ((this.life * 100 / this.max_life) > 20) {
-			this.power = false;
-		}
-	}
+// init Screen
+var Screen = Object.create(Enemy)
+Screen.validation = function(engine) {
+	return (Computer[this.name].is_alive() && engine.turn % 3 != 2)
+}
+Screen.action = function (engine) {
+	engine.player.mana -= Computer[this.name].power
+	return ["execute mana drain", Computer[this.name].power]
+}
 
-	// init Screen
-	Computer.Screen = Object.create(Enemy)
-	Computer.Screen.init('Screen', 80, 0.4, 2)
-	Computer.Screen.action = function () {
-		engine.player.looseMana(this.power)
-	}
+// init Keyboard
+var Keyboard = Object.create(Enemy)
+Keyboard.validation = function(engine, damage_value=4) {
+	// transform a player card when the component reach a life level
+	// power : boolean to check if action has been used
+	Computer[this.name].life -= Math.round(damage_value - (damage_value * Computer[this.name].defense))
 
-	// init Mouse
-	Computer.Mouse = Object.create(Enemy)
-	Computer.Mouse.init('Mouse', 20, 0, false)
-	Computer.Mouse.action = function () {
-		// detroy a player when the component reach a life level
-		// power : boolean to check if action has been used
-		if (this.power)
-			return ;
-		if ((this.life * 100 / this.max_life) <= 20) {
-			// if life under 20% mouse steal and delete a player card
-			if (engine.partie.hand.length > 0) {
-				let cardId = Math.round(Math.random() % engine.partie.hand.length);
-				engine.partie.deleteCard(cardId);
-				this.power = true;
-			}
-		}
+	// if life under 20% mouse transform a player card
+	if ((Computer[this.name].life * 100 / Computer[this.name].max_life) > 20)
+		Computer[this.name].power = true
+	else if (Computer[this.name].power)
+		return true
+	return false
+}
+Keyboard.action = function (engine) {
+	if (engine.partie.hand.length > 0) {
+		let cardId = Math.round(Math.random() % engine.partie.hand.length);
+		let card = engine.partie.getRandomCard()
+		engine.partie.replaceCard(cardId, card)
+		Computer[this.name].power = false;
+		return ["execute replace", cardId]
 	}
-	Computer.Mouse.heal = function(healing_value) {
-		// heal based on defense lvl. If component is really weak, the heal will be more efficient
-		var real_heal = Math.round(healing_value - (healing_value * this.defense));
-		
-		((this.life + real_heal) > this.max_life) ? 
-			(this.life = this.max_life) : (this.life += real_heal)
+	return []
+}
 
-		if ((this.life * 100 / this.max_life) > 20) {
-			this.power = false;
-		}
+// init Mouse
+Mouse = Object.create(Enemy)
+Mouse.validation = function(engine, damage_value=4) {
+	// detroy a player card when the component reach a life level
+	// power : boolean to check if action has been used
+	Computer[this.name].life -= Math.round(damage_value - (damage_value * Computer[this.name].defense))
+
+	// if life under 20% mouse steal and delete a player card
+	if ((Computer[this.name].life * 100 / Computer[this.name].max_life) > 20)
+		Computer[this.name].power = true
+	else if (Computer[this.name].power)
+		return true
+	return false
+}
+Mouse.action = function (engine) {
+	if (engine.partie.hand.length > 0) {
+		let cardId = Math.round(Math.random() % engine.partie.hand.length);
+		engine.partie.deleteCard(cardId);
+		Computer[this.name].power = false;
+		return ["execute steal", cardId]
 	}
+	return []
+}
+
+var Computer = {}
+
+get_enemies = function() {
+	var enemies = []
+
+	// init
+	CentralUnite.init('CentralUnite', 120, 0.7, 3)
+	Mouse.init('Mouse', 20, 0, true)
+	Screen.init('Screen', 80, 0.4, 2)
+	Keyboard.init('Keyboard', 40, 0.2, true)	
+
+	Computer[Mouse.name] = Mouse
+	Computer[Keyboard.name] = Keyboard
+	Computer[CentralUnite.name] = CentralUnite
+	Computer[Screen.name] = Screen
+
+	// add enemies to array
+	enemies.push(Computer[Mouse.name])
+	enemies.push(Computer[Keyboard.name])
+	enemies.push(Computer[CentralUnite.name])
+	enemies.push(Computer[Screen.name])
+
+	return enemies;
+}
+
+get_enemies_event = function(enemy_list) {
+	var events = []
+
+	events.push(new Event("CentralUnite", CentralUnite.action_validation, CentralUnite.action, permanante=true))
+	events.push(new Event("CentralUnite", CentralUnite.hit_validation, CentralUnite.hit, permanante=true))
+	events.push(new Event("Mouse", Mouse.validation, Mouse.action, permanante=true))
+	events.push(new Event("Keyboard", Keyboard.validation, Keyboard.action, permanante=true))
+
+	return events
 }
