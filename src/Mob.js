@@ -1,6 +1,6 @@
 import DE from '@dreamirl/dreamengine';
 
-export default (spriteId = "heart",, pos = { x: 0, y: 0 }, Game = window.Game) => {
+export default (spriteId = "heart", pos = { x: 0, y: 0 }, Game = window.Game) => {
   const obj = new DE.GameObject({
     interactive: true,
     ...pos,
