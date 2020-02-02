@@ -24,17 +24,17 @@ export default (max_life, defense, power) => ({ {
 	action(engine) {
 		// heal most broken component
 		let fenemy = null
-		for (let name in engine.ennemie) {
+		for (let name in engine.ennemis) {
 			// we're searching for lowest component life percentage
-			if (!fenemy && engine.ennemie[name].is_alive())
-				fenemy = engine.ennemie[name] 
-			else if	(engine.ennemie[name].is_alive() && (fenemy.life * 100 / fenemy.max_life) >
-				(engine.ennemie[name].life * 100 / engine.ennemie[name].max_life))
-				fenemy = engine.ennemie[name] 
+			if (!fenemy && engine.ennemis[name].is_alive())
+				fenemy = engine.ennemis[name] 
+			else if	(engine.ennemis[name].is_alive() && (fenemy.life * 100 / fenemy.max_life) >
+				(engine.ennemis[name].life * 100 / engine.ennemis[name].max_life))
+				fenemy = engine.ennemis[name] 
 		}
 		if (!fenemy)
 			return []
-		fenemy.heal(engine.ennemie.centralunite.power)
+		fenemy.heal(engine.ennemis.centralunite.power)
 		return ["execute heal", fenemy.name]
 	},
 	validation(engine) {

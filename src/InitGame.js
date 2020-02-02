@@ -13,6 +13,8 @@ const validDraw = (engine) => {
   return engine.partie.hand.length === 0
 }
 
+import Computer from './Computer'
+
 export default () => ({
     confCard : [
     {
@@ -44,6 +46,31 @@ export default () => ({
     "name": "draw",
     "validation": validDraw,
     "callback": () =>  PromiseParam(8, "None", [], () => {window.Engine.partie.giveCard()})
+  },
+  {
+    "name": "centralunite",
+    "validation": (engine) => true,
+    "callback": (engine) =>  PromiseParam(7, "none", [], engine.ennemie.centralunite.action),
+  },
+  {
+    "name": "centralunite",
+    "validation": (engine) => engine.ennemie.centralunite.validation(),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.centralunite.action),
+  },
+  {
+    "name": "screen",
+    "validation": (engine) => engine.ennemie.screen.validation(),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.screen.action),
+  },
+  {
+    "name": "keyboard",
+    "validation": (engine) => engine.ennemie.keyboard.validation(),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.keyboard.action),
+  },
+  {
+    "name": "mouse",
+    "validation": (engine) => engine.ennemie.mouse.validation(),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.mouse.action),
   }
   ],
   init : function () {
@@ -76,6 +103,9 @@ export default () => ({
     this.player =  Player("carlito", 30, 5);
     this.engine = Engine(this.cards, [], this.player);
     window.Engine = this.engine
+    var ennemis = Computer()
+    ennemis.init()
+    this.engine = Engine(this.cards, ennemis, this.player);
     this.gameLoop = GameLoop(this.events, this.action, this.engine, this.player, [])
   },
   getLoop : function (){

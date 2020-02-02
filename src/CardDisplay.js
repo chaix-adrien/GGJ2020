@@ -1,11 +1,12 @@
 import DE from '@dreamirl/dreamengine';
 import ParticleDisplay from "./ParticleDisplay"
 
-export default (onPlaySpriteId = "explosion", Game = window.Game) => {
+export default (onPlaySpriteId = "explosion", spriteId = 'card', needTarget = false, Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
     selected: false,
     x: 1920 / 2,
+    needTarget: needTarget,
     y: 1080 / 2,
     pile: Game.Picker,
     sendParticles: false,
@@ -26,7 +27,7 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
       if (Game.waitingForPick && this.selected) return
       this.scaleTo({ x: 1, y: 1 }, 100)
       this.sendParticles = this.select && true
-      if (this.selected && !Game.waitingForPick)
+      if (this.selected && !Game.waitingForPick && this.needTarget)
         this.addAutomatism("createParticle", "createParticle", { interval: 50 })
     },
     pointerover: function () {
@@ -50,7 +51,8 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
         this.zindex = 510
         Game.selectedCard = this
         console.log("and here")
-        this.addAutomatism("createParticle", "createParticle", { interval: 50 })
+        if (this.needTarget)
+          this.addAutomatism("createParticle", "createParticle", { interval: 50 })
       }
     },
     deselect: function () {
@@ -142,19 +144,23 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
       var particle = new DE.GameObject({
         x: this.parent.x + this.x,
         y: this.parent.y + this.y - 200,
+        scale: { x: 2, y: 2 },
         updateMe: function (target) {
           this.moveTo(target, 150)
           if (Game.Pointer.isInRectBox(this, 100))
             this.askToKill()
 
         },
-        automatisms: [['updateMe', 'updateMe', { value1: Game.Pointer }]],
+        automatisms: [
+          ['fade', 'fadeOut'],
+          ['updateMe', 'updateMe', { value1: Game.Pointer }],
+        ],
         rotation: Math.random() * Math.PI,
-        renderer: new DE.SpriteRenderer({ spriteName: 'particle', scale: 1 }),
+        renderer: new DE.SpriteRenderer({ spriteName: 'mouseLine', scale: 1 }),
       });
       Game.scene.add(particle);
     },
-    renderer: new DE.SpriteRenderer({ spriteName: 'card', scale: 1 }),
+    renderer: new DE.SpriteRenderer({ spriteName: spriteId, scale: 1 }),
     gameObjects: [
       new DE.GameObject({
         alpha: 0,
@@ -170,7 +176,7 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
     destroy: function (anim = true, direction) {
       this.deselect()
       this.interactive = false
-      this.zindex = 450
+      this.zindex = 200
       const dl = () => {
         this.zindex = 450
         if (this.pile)
@@ -211,12 +217,17 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
     },
     play: function (target) {
       return new Promise(resolve => {
+        this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
+        this.pile.removeCard(this)
+        Game.addParticle(this.onPlaySpriteId, target || this)
         if (target) {
           this.moveTo(target, 2000)
-          this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
-          this.pile.removeCard(this)
-          console.log(this.onPlaySpriteId)
-          Game.addParticle(this.onPlaySpriteId, target)
+          this.destroy()
+          this.pile.goToDefaultPos()
+          return resolve()
+        } else {
+          const toGo = { x: this.x, y: this.y - 200 }
+          this.moveTo(toGo, 2000)
           this.destroy()
           this.pile.goToDefaultPos()
 
