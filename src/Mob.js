@@ -1,6 +1,6 @@
 import DE from '@dreamirl/dreamengine';
 
-export default (Game = window.Game) => {
+export default (spriteId = "heart", Game = window.Game) => {
   const obj = new DE.GameObject({
     interactive: true,
     x: 1920 / 2,
@@ -28,7 +28,7 @@ export default (Game = window.Game) => {
       this.scale = { x: 1, y: 1 }
       this.removeAutomatism("animTargeted")
     },
-    renderer: new DE.SpriteRenderer({ spriteName: 'heart', scale: 1 }),
+    renderer: new DE.SpriteRenderer({ spriteName: spriteId, scale: 1 }),
   })
 
   window.Game.scene.add(obj)
