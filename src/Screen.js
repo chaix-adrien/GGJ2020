@@ -6,14 +6,17 @@ export default (max_life, defense, power) => ({
 	life: max_life,
 	defense: defense,
 	power: power,
-	gameObj: Mob('ecran_1', {x: 1300, y: 300}, 'explosion', max_life),
-	init : function () {
+	gameObj: Mob('ecran_1', { x: 1300, y: 300 }, 'explosion', max_life),
+	init: function () {
 		this.gameObj._engineEnnemi = this
 	},
 	getDammage(damage_value) {
 		// deal damage - % defense
 		this.life -= Math.round(damage_value - (damage_value * this.defense))
 		this.gameObj.hurt(damage_value)
+		if (this.life <= 0) {
+			this.gameObj.kill()
+		}
 	},
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient

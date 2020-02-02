@@ -6,14 +6,17 @@ export default (max_life, defense, power) => ({
 	life: max_life,
 	defense: defense,
 	power: power,
-	gameObj: Mob('tour', {x: 600, y: 400}, 'explosion', max_life),
-	init : function () {
+	gameObj: Mob('tour', { x: 600, y: 400 }, 'explosion', max_life),
+	init: function () {
 		this.gameObj._engineEnnemi = this
 	},
 	getDammage(damage_value) {
 		// deal damage - % defense
 		this.life -= Math.round(damage_value - (damage_value * this.defense))
 		this.gameObj.hurt(damage_value)
+		if (this.life <= 0) {
+			this.gameObj.kill()
+		}
 	},
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient
@@ -34,10 +37,10 @@ export default (max_life, defense, power) => ({
 		for (let name in engine.ennemis) {
 			// we're searching for lowest component life percentage
 			if (name == "init" || name == "delete" || name == "validation" || !engine.ennemis[name])
-				continue ;
+				continue;
 			if (!fenemy && engine.ennemis[name].is_alive())
 				fenemy = engine.ennemis[name]
-			else if	(engine.ennemis[name].is_alive() && (fenemy.life * 100 / fenemy.max_life) >
+			else if (engine.ennemis[name].is_alive() && (fenemy.life * 100 / fenemy.max_life) >
 				(engine.ennemis[name].life * 100 / engine.ennemis[name].max_life))
 				fenemy = engine.ennemis[name]
 		}
@@ -53,8 +56,8 @@ export default (max_life, defense, power) => ({
 		if (!engine.event[1] || !engine.computer.centralunite.is_alive())
 			return false;
 		if (!engine.event[1].name == "centralunite")
-		if (engine.turn % 3 == 2)
-			return true;
+			if (engine.turn % 3 == 2)
+				return true;
 		return false
 	}
 })
