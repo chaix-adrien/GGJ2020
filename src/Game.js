@@ -118,7 +118,7 @@ Game.onload = function () {
     return new Promise(resolve => {
       Game.waitingForPlay = (card, target) => {
         Game.waitingForPlay = null
-        return resolve(card, target)
+        return resolve({ card, target })
       }
       return resolve
     })
