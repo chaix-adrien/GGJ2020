@@ -25,7 +25,11 @@ const images = {
       const perso = customLoad.map(l => {
         const out = []
         out.push(l.file)
-        out.push("customLoad/" + l.path.split("./")[1])
+        if (l.path.includes("\\")) {
+          out.push("customLoad\\" + l.path.split(".\\")[1])
+        } else {
+          out.push("customLoad/" + l.path.split("./")[1])
+        }
         return out
       })
       console.log(perso)
