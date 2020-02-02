@@ -57,7 +57,7 @@ export default (Game = window.Game) => new DE.GameObject({
 
   gameObjects: [
     new DE.GameObject({
-      y: 400,
+      y: 450,
       zindex: 1000,
       interactive: true,
       hitArea: new DE.PIXI.Rectangle(-225, -50, 450, 100),

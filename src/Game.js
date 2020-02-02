@@ -61,7 +61,6 @@ Game.onload = function () {
   Game.camera.pointerup = function (pos, e) {
     if (!Game.selectedCard) return
     if (Game.selectedCard.isOnPicker) return
-    console.log(Game.selectedCard.isOnPicker)
     Game.selectedCard.goToDefaultPos()
     //Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
 
@@ -104,7 +103,6 @@ Game.onload = function () {
   Game.waitForCardPlay = () => {
     return new Promise(resolve => {
       Game.waitingForPlay = (card, target) => {
-        console.log("ici", card, target)
         Game.waitingForPlay = null
         return resolve({ card, target })
       }
@@ -134,13 +132,14 @@ Game.onload = function () {
 
   DE.Inputs.on('keyDown', 'left', function () {
     function infiniteTurn() {
-      if (!(turn % 3))
+      if (!(turn % 3) && turn)
         Game.waitCardPicker(Game.Draw.content, 1).then((cards) => {
           console.log("card", cards)
           turn++
           //cards[0].play(Game.Mob)
           //Game.Hand.switchCards(cards[1], Game.Hand.content[0])
-          cards[0].destroy()
+          const card = CardDisplay()
+          card.spawnInto(Game.Hand)
           infiniteTurn()
 
         })
@@ -164,6 +163,14 @@ Game.onload = function () {
   });
 
   DE.Inputs.on('keyDown', 'right', function () {
+    const test = () => ({
+      init: function () {
+        this.x = 6
+        return this
+      },
+      x: 5
+    }.init())
+    console.log(test())
   });
 };
 window.Game = Game

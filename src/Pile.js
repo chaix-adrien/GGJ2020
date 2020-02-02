@@ -7,8 +7,8 @@ export default (key, pos = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Game) => 
     key: key,
     content: [],
     addCard: function (card, last = true, anim = true) {
-      console.log("add to", this.key, card)
       if (card.pile === this || !card) return
+      Game.scene.add(card)
       if (card.pile)
         card.pile.removeCard(card)
       console.log("add card to pile", key)
