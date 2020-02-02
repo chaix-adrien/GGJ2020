@@ -50,10 +50,12 @@ export default (Game = window.Game) => {
       }
     },
     deselect: function () {
+      this.z = 0
       if (Game.selectedCard !== this && this.pile !== Game.Picker) return
       this.selected = false
-      this.z = 0
       this.setHighlight(0)
+      this.scaleTo({ x: 1, y: 1 }, 100)
+
       if (this.pile === Game.Picker) {
 
       }
@@ -121,7 +123,6 @@ export default (Game = window.Game) => {
 
 
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {
-      console.log("getHAndppos", total, id)
       const espace = 350
       const out = {
         rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
