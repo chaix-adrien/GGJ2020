@@ -5,6 +5,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
     zindex: 500,
     selected: false,
     x: 1920 / 2,
+    scale: { x: 0.8, y: 0.8 },
     needTarget: needTarget,
     y: 1080 / 2,
     manaCost,
@@ -25,13 +26,13 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
     },
     pointerout: function () {
       if (Game.waitingForPick && this.selected) return
-      this.scaleTo({ x: 1, y: 1 }, 100)
+      this.scaleTo({ x: 0.8, y: 0.8 }, 100)
       this.sendParticles = this.select && true
       if (this.selected && !Game.waitingForPick && this.needTarget)
         this.addAutomatism("createParticle", "createParticle", { interval: 50 })
     },
     pointerover: function () {
-      this.scaleTo({ x: 1.2, y: 1.2 }, 100)
+      this.scaleTo({ x: 1, y: 1 }, 100)
       this.removeAutomatism("createParticle")
     },
 
@@ -60,7 +61,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
       if (Game.selectedCard !== this && !Game.waitingForPick) return
       this.selected = false
       this.setHighlight(0)
-      this.scaleTo({ x: 1, y: 1 }, 100)
+      this.scaleTo({ x: 0.8, y: 0.8 }, 100)
       this.goToDefaultPos()
       if (Game.waitingForPick) {
 
@@ -87,7 +88,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
       if (!that.selected) return
       const pos = { ...gpos }
       const out = { ...gpos }
-      const limitZero = 1080 - 300
+      const limitZero = 1080 - 200
       const vMouse = {
         x: (pos.x - (that.parent.x + that.x)),
         y: (pos.y - (that.parent.y + that.y)),
@@ -143,7 +144,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
     drawLineToMouse: function (start) {
       var particle = new DE.GameObject({
         x: this.parent.x + this.x,
-        y: this.parent.y + this.y - 200,
+        y: this.parent.y + this.y - 100,
         scale: { x: 2, y: 2 },
         updateMe: function (target) {
           this.moveTo(target, 150)
