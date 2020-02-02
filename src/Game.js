@@ -15,6 +15,7 @@ import CardDisplay from "./CardDisplay"
 import Mob from "./Mob"
 import Pile from "./Pile"
 import CardPicker from "./CardPicker"
+import Mana from "./Mana"
 import ParticleDisplay from "./ParticleDisplay"
 
 var Game = {};
@@ -78,6 +79,8 @@ Game.onload = function () {
   Game.Pointer = Pointer()
 
   Game.Mob = Mob()
+  Game.Mana = Mana()
+  Game.Mana.setMana(5)
 
   Game.CardPicker = CardPicker()
   Game.Hand = Pile("Hand", {
@@ -105,6 +108,7 @@ Game.onload = function () {
     Game.Hand,
     Game.Draw,
     Game.Picker,
+    Game.Mana
 
   );
 

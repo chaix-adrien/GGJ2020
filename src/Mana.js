@@ -9,26 +9,35 @@ const textMana = new DE.TextRenderer('', {
   },
 })
 
-export default (Game = window.Game) => new DE.GameObject({
-  x: 20,
-  y: 1080 - 50,
-  gameObjects: [
-    buttonValidate,
-    new DE.GameObject({
-      y: -400,
-      zindex: 1000,
-      interactive: true,
-      cursor: 'pointer',
-      renderers: [
-        new DE.RectRenderer(100, 100, '0xFFCDCD', {
-          lineStyle: [4, '0x000000', 1],
-          fill: true,
-          x: -250,
-          y: -40,
-        }),
-        textSelectNumber
-      ],
-    })
+export default (maxMana = 5, Game = window.Game) => new DE.GameObject({
+  x: 120,
+  y: 1080 - 120,
+  maxMana,
+  manaPool: maxMana,
+  spendMana: function (ammount) {
+    if (this.manaPool - ammount >= 0) {
+      this.setMana(this.manaPool - ammount)
+      return true
+    }
+    return false
+  },
+  setMana: function (to) {
+    this.manaPool = to
+    textMana.text = to + "/" + this.maxMana
+  },
+  reset: function () {
+    this.setMana(this.maxMana)
+  },
+  canPlay: function (card) {
+    return this.manaPool >= card.manaCost
+  },
+  renderers: [
+    new DE.RectRenderer(100, 100, '0xFFCDCD', {
+      lineStyle: [4, '0x000000', 1],
+      fill: true,
+      x: -50,
+      y: -50,
+    }),
+    textMana
   ],
-  renderer: new DE.SpriteRenderer({ spriteName: 'backCardPicker', scale: 1 }),
 });
