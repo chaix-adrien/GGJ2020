@@ -1,8 +1,9 @@
 import DE from '@dreamirl/dreamengine';
 const textMana = new DE.TextRenderer('', {
   textStyle: {
-    fill: 'black',
-    fontSize: 50,
+    fill: 'white',
+    fontSize: 100,
+    fontWeight: "bold",
     fontFamily: 'Snippet, Monaco, monospace',
     strokeThickness: 1,
     align: 'center',
@@ -25,7 +26,7 @@ export default (maxMana = 5, Game = window.Game) => new DE.GameObject({
   },
   setMana: function (to) {
     this.manaPool = to
-    textMana.text = to + "/" + this.maxMana
+    textMana.text = to
   },
   reset: function () {
     this.setMana(this.maxMana)
