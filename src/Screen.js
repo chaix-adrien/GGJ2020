@@ -13,6 +13,7 @@ export default (max_life, defense, power) => ({
 	getDammage(damage_value) {
 		// deal damage - % defense
 		this.life -= Math.round(damage_value - (damage_value * this.defense))
+		this.gameObj.hurt(damage_value)
 	},
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient
@@ -32,6 +33,7 @@ export default (max_life, defense, power) => ({
 		return ["execute mana drain", engine.ennemis.screen.power]
 	},
 	validation(engine) {
+		console.log("VALIDATION SCREEN")
 		if (!engine.ennemis.screen || !engine.ennemis.centralunite)
 			return false;
 		if (!engine.event[1] || !engine.ennemis.centralunite.is_alive())
