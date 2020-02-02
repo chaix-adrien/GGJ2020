@@ -19,7 +19,7 @@ export default (cards, ennemis, player) => ({
       var target = obj.target._engineEnnemi;
       const card = self.partie.play(obj.card._engineCard);
       if (self.player.play(card.cost)){
-          card.action(target);
+          card.play(target);
           self.event = [card, target];
           self.turn += 1;
           return true;
