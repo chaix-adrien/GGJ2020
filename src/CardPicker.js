@@ -66,7 +66,6 @@ export default (Game = window.Game) => new DE.GameObject({
   },
   pick: function (cardPool, toPick, pile) {
     if (this.toPick !== 0) return
-    console.log("pick", cardPool, toPick)
     this.currentPool = cardPool
     this.lastPills = this.currentPool.map(c => c.pile)
 

@@ -48,11 +48,9 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
         this.selectedRecently = false
       }, 500)
       if (Game.waitingForPick) {
-        console.log("SELECT HERE")
       } else if (this.pile === Game.Hand) {
         this.zindex = 510
         Game.selectedCard = this
-        console.log("and here")
         if (this.needTarget)
           this.addAutomatism("createParticle", "createParticle", { interval: 50 })
       }
@@ -168,8 +166,8 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
         scale: { x: 0.95, y: 0.95 },
         alpha: 0,
         zindex: 10,
-        enable: function (time) { console.log("enable", this.fade); this.fade(this.alpha, 0.5, time) },
-        disable: function (time) { console.log("disable"); this.fade(this.alpha, 0, time) },
+        enable: function (time) { this.fade(this.alpha, 0.5, time) },
+        disable: function (time) { this.fade(this.alpha, 0, time) },
         renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
       })
     ],

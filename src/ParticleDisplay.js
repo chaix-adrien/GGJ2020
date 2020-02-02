@@ -1,7 +1,6 @@
 import DE from '@dreamirl/dreamengine';
 const zindexParticles = 400
 export default (idSprite, toObj = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Game) => {
-  console.log(toObj.x, toObj.y)
   const obj = new DE.GameObject({
     zindex: zindexParticles,
     x: toObj.x,
@@ -14,8 +13,6 @@ export default (idSprite, toObj = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Ga
       }, 300)
     },
     _fade: function () {
-      console.log("scale", this.scale)
-
       this.setScale({ x: this.scale + 0.5, y: this.scale.y + 0.1 })
     },
     automatisms: [
@@ -24,7 +21,6 @@ export default (idSprite, toObj = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Ga
       ["kill", "_kill", { persistent: false }]
     ],
   })
-  console.log(obj.x, obj.y)
   Game.scene.add(obj)
   return obj
 }

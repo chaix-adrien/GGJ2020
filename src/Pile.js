@@ -11,9 +11,7 @@ export default (key, pos = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Game) => 
       Game.scene.add(card)
       if (card.pile)
         card.pile.removeCard(card)
-      console.log("add card to pile", key)
       card.pile = this
-      console.log("add to", this.key, last ? "debut" : "fin")
       last ? this.content.unshift(card) : this.content.push(card)
 
       if (anim)
