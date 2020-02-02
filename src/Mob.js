@@ -31,6 +31,6 @@ export default (Game = window.Game) => {
     renderer: new DE.SpriteRenderer({ spriteName: 'heart', scale: 1 }),
   })
 
-  Game.scene.add(obj)
+  window.Game.scene.add(obj)
   return obj
 };
