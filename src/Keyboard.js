@@ -26,7 +26,7 @@ export default (max_life, defense, power) => ({ {
 			let cardId = Math.round(Math.random() % engine.partie.hand.length);
 			let card = engine.partie.getRandomCard()
 			engine.partie.replaceCard(cardId, card)
-			engine.ennemie.keyboard.power = false;
+			engine.ennemis.keyboard.power = false;
 			return ["execute steal", cardId]
 		}
 		return []
@@ -40,11 +40,11 @@ export default (max_life, defense, power) => ({ {
 			return false
 		if (engine.turn % 3 == 2)
 			return false;
-		if (!engine.ennemie.keyboard.is_alive())
+		if (!engine.ennemis.keyboard.is_alive())
 			return false;
-		if ((engine.ennemie.keyboard.life * 100 / engine.ennemie.keyboard.max_life) > 20)
-			engine.ennemie.keyboard.power = true
-		if (engine.ennemie.keyboard.power)
+		if ((engine.ennemis.keyboard.life * 100 / engine.ennemis.keyboard.max_life) > 20)
+			engine.ennemis.keyboard.power = true
+		if (engine.ennemis.keyboard.power)
 			return true
 		return false
 	}

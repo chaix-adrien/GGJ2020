@@ -4,7 +4,7 @@ import Card from './Card'
 import Player from './Player'
 import GameLoop from './GameLoop'
 import Event from './Event'
-
+import Computer from './Computer'
 
 export default () => ({
     confCard : [
@@ -28,6 +28,26 @@ export default () => ({
     "name": "tour",
     "validation": (engine) => engine.player.is_alive(),
     "callback": (engine) => new Promise(5, "play", [], (cardId, target) => engine.action(cardId, target)),
+  },
+  {
+    "name": "centralunite",
+    "validation": (engine) => engine.ennemie.centralunite.validation(),
+    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.centralunite.action),
+  },
+  {
+    "name": "screen",
+    "validation": (engine) => engine.ennemie.screen.validation(),
+    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.screen.action),
+  },
+  {
+    "name": "keyboard",
+    "validation": (engine) => engine.ennemie.keyboard.validation(),
+    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.keyboard.action),
+  },
+  {
+    "name": "mouse",
+    "validation": (engine) => engine.ennemie.mouse.validation(),
+    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.mouse.action),
   }
   ],
   init : function () {
@@ -55,7 +75,9 @@ export default () => ({
     console.log("--------------")
     this.player =  Player("carlito", 30, 5);
     console.log(this.player)
-    this.engine = Engine(this.cards, [], this.player);
+    var ennemis = Computer()
+    ennemis.init()
+    this.engine = Engine(this.cards, ennemis, this.player);
     console.log(this.engine)
   }
 })
