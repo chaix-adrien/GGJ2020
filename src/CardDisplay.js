@@ -209,8 +209,7 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
       })
     },
     draw: function () {
-      Game.Draw.draw(this)
-      return Promise.resolve(this)
+      return Game.Draw.draw(this)
     },
     spawnInto: function (pile) {
       this.x = 1920 / 2

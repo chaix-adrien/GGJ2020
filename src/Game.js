@@ -102,6 +102,9 @@ Game.onload = function () {
 
   );
 
+  //===============================
+  //========= API==================
+  //===============================
   Game.waitForCardPlay = () => {
     return new Promise(resolve => {
       Game.waitingForPlay = (card, target) => {
@@ -130,6 +133,7 @@ Game.onload = function () {
     })
   }
 
+  //=======================================================
   var turn = 0
 
   DE.Inputs.on('keyDown', 'left', function () {
