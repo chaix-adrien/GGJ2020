@@ -44,16 +44,17 @@ export default (spriteId = "heart", pos = { x: 0, y: 0 }, onHurtSpriteId = "expl
       new DE.GameObject({
         y: -150,
         renderers: [
-          new DE.RectRenderer(100, 100, '0xFFCDCD', {
+          new DE.RectRenderer(120, 80, '0x8252a5', {
             lineStyle: [4, '0x000000', 1],
             fill: true,
-            x: -50,
-            y: -50,
+            x: -60,
+            y: -40,
           }),
           new DE.TextRenderer('5/5', {
             textStyle: {
-              fill: 'black',
+              fill: 'white',
               fontSize: 35,
+              fontWeight: "bold",
               fontFamily: 'Snippet, Monaco, monospace',
               strokeThickness: 1,
               align: 'center',

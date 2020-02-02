@@ -85,7 +85,7 @@ Game.onload = function () {
   Game.CardPicker = CardPicker()
   Game.Hand = Pile("Hand", {
     x: 1920 / 2,
-    y: 1080
+    y: 1080 - 150
   })
   Game.Draw = Pile("Draw", {
     x: 100,
