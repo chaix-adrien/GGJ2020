@@ -197,6 +197,10 @@ export default (Game = window.Game) => {
         }
       })
     },
+    draw: function () {
+      Game.Draw.draw(this)
+      return Promise.resolve(this)
+    },
     spawnInto: function (pile) {
       this.x = 1920 / 2
       this.y = 1080 / 2

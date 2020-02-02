@@ -155,7 +155,7 @@ Game.onload = function () {
   });
 
   DE.Inputs.on('keyDown', 'up', function () {
-    Game.Draw.draw(Game.Draw.content[0])
+    Game.Draw.content[0].draw()
   });
 
   DE.Inputs.on('keyDown', 'down', function () {

@@ -22,7 +22,8 @@
     "prettier": "^1.18.2"
   },
   "scripts": {
-    "start": "cross-env npm run dev",
+    "dumpAs": "python ./assets/imgs/customLoad/generateJson.py",
+    "start": "yarn dumpAs && cross-env yarn dev",
     "dev": "cross-env parcel html/browser.html -d dist/dev/",
     "build": "cross-env parcel build html/browser.html -d dist/prod/",
     "dev:electron": "cross-env NODE_ENV=electron parcel html/browser.html -d dist/dev-electron/",
