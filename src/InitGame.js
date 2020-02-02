@@ -4,6 +4,15 @@ import Card from './Card'
 import Player from './Player'
 import GameLoop from './GameLoop'
 import Event from './Event'
+import PromiseParam from './PromiseParam'
+
+const validDraw = (engine) => {
+  console.log("trigger valid draw")
+  console.log(engine)
+  console.log(engine.partie.hand.length === 0)
+  return engine.partie.hand.length === 0
+}
+
 import Computer from './Computer'
 
 export default () => ({
@@ -12,42 +21,56 @@ export default () => ({
       "name": "coup de poing",
       "description": "inflige 1 point de degat",
       "action": (target) => target.getDammage(1),
-      "cost": 5
+      "cost": 5,
+      "png": "explosion",
     },
   ],
   action : {
-    "play": (cardId, target) => Promise.resolve(cardId, target)
+    "handChoice": (objs, nb) => window.Game.waitCardPicker(objs, nb, window.game.Hand),
+    "choice": (objs, nb) => window.Game.waitCardPicker(objs, nb),
+    "play": () => window.Game.waitForCardPlay(),
+    "None": () => Promise.resolve()
   },
   confEvent: [
     {
     "name": "choix de carte",
     "validation": (engine) => engine.turn % 2 === 0,
-    "callback": engine => (console.log("choix de carte"))
+    "callback": () => (console.log("choix de carte"))
   },
   {
     "name": "tour",
     "validation": (engine) => engine.player.is_alive(),
-    "callback": (engine) => new Promise(5, "play", [], (cardId, target) => engine.action(cardId, target)),
+    "callback":  () => PromiseParam(5, "play", [], window.Engine.action)
+  },
+  {
+    "name": "draw",
+    "validation": validDraw,
+    "callback": () =>  PromiseParam(8, "None", [], () => {window.Engine.partie.giveCard()})
+  },
+  {
+    "name": "centralunite",
+    "validation": (engine) => true,
+    "callback": (engine) =>  PromiseParam(7, "none", [], engine.ennemie.centralunite.action),
   },
   {
     "name": "centralunite",
     "validation": (engine) => engine.ennemie.centralunite.validation(),
-    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.centralunite.action),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.centralunite.action),
   },
   {
     "name": "screen",
     "validation": (engine) => engine.ennemie.screen.validation(),
-    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.screen.action),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.screen.action),
   },
   {
     "name": "keyboard",
     "validation": (engine) => engine.ennemie.keyboard.validation(),
-    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.keyboard.action),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.keyboard.action),
   },
   {
     "name": "mouse",
     "validation": (engine) => engine.ennemie.mouse.validation(),
-    "callback": (engine) => new Promise(2, "none", [], engine.ennemie.mouse.action),
+    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.mouse.action),
   }
   ],
   init : function () {
@@ -64,20 +87,29 @@ export default () => ({
   },
   initCard :function (){
     this.cards = []
-    var id = 0;
-    console.log("OK")
-    this.confCard.forEach(elem  => {this.cards.push(new Card(elem["name"],
-    elem["description"],
-    elem["action"], elem["cost"], CardDisplay() )); id += 1;})
+    this.confCard.forEach(elem  => {
+      var gameObj = CardDisplay(elem["png"])
+      var cd = Card(elem["name"],
+      elem["description"],
+      elem["action"], elem["cost"],
+       gameObj)
+       cd.init()
+       this.cards.push(cd)
+       gameObj.spawnInto(window.Game.Draw)
+       })
   },
 
   initLoop : function (){
-    console.log("--------------")
     this.player =  Player("carlito", 30, 5);
-    console.log(this.player)
+    this.engine = Engine(this.cards, [], this.player);
+    window.Engine = this.engine
     var ennemis = Computer()
     ennemis.init()
     this.engine = Engine(this.cards, ennemis, this.player);
-    console.log(this.engine)
+    this.gameLoop = GameLoop(this.events, this.action, this.engine, this.player, [])
+  },
+  getLoop : function (){
+    console.log("GetLoop")
+    return this.gameLoop
   }
 })

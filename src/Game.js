@@ -17,6 +17,7 @@ import Pile from "./Pile"
 import CardPicker from "./CardPicker"
 import Mana from "./Mana"
 import ParticleDisplay from "./ParticleDisplay"
+import InitGame from './InitGame'
 
 var Game = {};
 Game.init = function () {
@@ -97,11 +98,9 @@ Game.onload = function () {
     y: 1080 / 2
   })
 
-  Array.from(Array(5).keys()).forEach((_, id) => Game.Hand.addCard(CardDisplay("explosion", "carte_" + (id + 1) + "_plus")))
-  Game.Hand.goToDefaultPos()
 
-  Array.from(Array(5).keys()).forEach((_, id) => Game.Draw.addCard(CardDisplay()))
-  Game.Draw.goToDefaultPos()
+  //Array.from(Array(5).keys()).forEach((_, id) => Game.Draw.addCard(CardDisplay()))
+  //Game.Draw.goToDefaultPos()
   Game.scene.add(
     Game.Hand,
     Game.Mob,
@@ -145,6 +144,14 @@ Game.onload = function () {
 
   //=======================================================
   var turn = 0
+  const gm =  InitGame()
+  gm.init(Game)
+  gm.initCard()
+  gm.initLoop()
+  gm.getLoop()
+  var gloop = gm.getLoop()
+  gloop.event()
+  gloop.loop()
 
   DE.Inputs.on('keyDown', 'left', function () {
     function infiniteTurn() {
