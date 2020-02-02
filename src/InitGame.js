@@ -86,12 +86,22 @@ export default () => ({
     },
   ],
   action : {
-    "handChoice": (objs, nb) => window.Game.waitCardPicker(objs, nb, window.game.Hand),
+    "handChoice": (objs, nb) => window.Game.waitCardPicker(objs, nb, window.Game.Hand),
     "choice": (objs, nb) => window.Game.waitCardPicker(objs, nb),
     "play": () => window.Game.waitForCardPlay(),
     "None": (engine) => Promise.resolve(engine)
   },
   confEvent: [
+    {
+      "name": "end",
+      "validation": (engine) => { console.log("Mana",  engine.player.mana); return engine.player.mana == 0 },
+      "callback": (engine) =>  PromiseParam(9, "None", [engine], engine.end),
+    },
+    {
+      "name": "tour",
+      "validation": (engine) => {console.log("HAnd", window.Game.Hand.content); return engine.turn % 2 === 0},
+      "callback":  () => PromiseParam(5, "choice", [window.Game.Draw.content.filter(elem => window.Game.Draw.content.indexOf(elem) < 3), 1], window.Engine.choice)
+    },
   {
     "name": "tour",
     "validation": (engine) => engine.player.is_alive(),
@@ -133,7 +143,7 @@ export default () => ({
     this.initCard()
     this.initEvent()
     this.initLoop()
-    window.Game.Mana.setMana(30)
+    window.Game.Mana.setMana(3)
 
   },
   initEvent : function(){
@@ -157,7 +167,7 @@ export default () => ({
   },
 
   initLoop : function (){
-    this.player =  Player("carlito", 30, 30);
+    this.player =  Player("carlito", 30, 3);
     this.engine = Engine(this.cards, [], this.player);
     var ennemis = Computer()
     ennemis.init()

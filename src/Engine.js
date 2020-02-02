@@ -1,7 +1,7 @@
 import Partie from './Partie'
 
 export default (cards, ennemis, player) => ({
-    turn : 0,
+    turn : 1,
     player : player,
     partie : Partie(cards),
     ennemis : ennemis,
@@ -24,11 +24,13 @@ export default (cards, ennemis, player) => ({
       self.turn += 1;
       return true;
     },
+    choice : function (obj) {
+      var self = window.Engine
+      self.partie.hand.push(obj[0]._engineCard)
+      obj[0].spawnInto(window.Game.Hand)
+    },
     end : function() {
-      if ( (this.player.is_alive() === false)   || (this.player.mana === 0 )) {
-        return false;
-      }
-      return true;
+      console.log("end")
     }
   }
 )
