@@ -48,7 +48,6 @@ export default (card, handSize = 10) => ({
     const card = this.hand.find(elem => elem === cardId);
     this.hand = this.hand.filter(c => c !== card);
     this.deck.push(card);
-    card.gameObj.play()
     return card;
   }
 

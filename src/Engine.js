@@ -17,14 +17,12 @@ export default (cards, ennemis, player) => ({
     action : function (obj) {
       var self = window.Engine
       var target = obj.target._engineEnnemi;
+      console.log("Obj :", obj.card._engineCard)
       const card = self.partie.play(obj.card._engineCard);
-      if (self.player.play(card.cost)){
-          card.play(target);
-          self.event = [card, target];
-          self.turn += 1;
-          return true;
-      }
-      return false;
+      card.play(target);
+      self.event = [card, target];
+      self.turn += 1;
+      return true;
     },
     end : function() {
       if ( (this.player.is_alive() === false)   || (this.player.mana === 0 )) {
