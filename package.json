@@ -8,6 +8,8 @@
   "license": "ISC",
   "dependencies": {
     "@dreamirl/dreamengine": "github:dreamirl/dreamengine",
+    "file-system": "^2.2.2",
+    "fs": "^0.0.1-security",
     "requirejs": "^2.3.6"
   },
   "devDependencies": {

@@ -13,6 +13,7 @@
  *
  * name, and url are required
  */
+const fs = require('fs')
 const images = {
   // images folder name 
   baseUrl: "imgs/",
@@ -20,27 +21,26 @@ const images = {
   // usage name, real name (can contain subpath), extension, parameters
   pools: {
     // loaded when engine is inited
-    default: [
-      // [ "example", "example", "png", { "totalFrame": 4, "totalLine": 2, "interval": 50, "animated":true, "isReversed": false } ]
-      // [ "ship", "ayera/ship.png", { "totalFrame": 10, "totalLine": 1, "interval": 100, "animated":true, "isReversed": false } ]
-      ["card", "shmup/card.png"],
-      ["backCardPicker", "shmup/back.png"],
-      ["explosion", "shmup/explosion.png"],
-      ["cardHighlight", "shmup/cardHighlight.png"],
-      ["particle", "shmup/p-bullet.png", { "totalFrame": 10, "interval": 50, "animated": true, "loop": false }],
-      ["heart", "shmup/heart.png"],
-      ["target", "shmup/target.png"],
-      ["reactor", "shmup/reactor.png", { "totalFrame": 4, "interval": 40, "animated": true }],
-      "shmup/ship.json",
+    default: function () {
+      console.log('FS', fs)
+      return ["explosion", "heart"].map(a => [a, "customLoad\\" + a + ".png"]).concat(
+        [["card", "shmup/card.png"],
+        ["backCardPicker", "shmup/back.png"],
+        ["cardHighlight", "shmup/cardHighlight.png"],
+        ["particle", "shmup/p-bullet.png", { "totalFrame": 10, "interval": 50, "animated": true, "loop": false }],
+        ["target", "shmup/target.png"],
+        ["reactor", "shmup/reactor.png", { "totalFrame": 4, "interval": 40, "animated": true }],
+          "shmup/ship.json",
 
-      ["bg", "env/bg.jpg", { "totalFrame": 1, "animated": false, "isReversed": false }],
-      ["canyon", "env/canyon.png", { "totalFrame": 1, "animated": false, "isReversed": false }],
-      ["grass", "env/grass.png", { "totalFrame": 1, "animated": false, "isReversed": false }],
-      ["touchControlBackground", "touch-control/background.png", { "totalFrame": 1, "animated": false }],
-      ["touchControlStick", "touch-control/stick.png", { "totalFrame": 1, "animated": false }],
+        ["bg", "env/bg.jpg", { "totalFrame": 1, "animated": false, "isReversed": false }],
+        ["canyon", "env/canyon.png", { "totalFrame": 1, "animated": false, "isReversed": false }],
+        ["grass", "env/grass.png", { "totalFrame": 1, "animated": false, "isReversed": false }],
+        ["touchControlBackground", "touch-control/background.png", { "totalFrame": 1, "animated": false }],
+        ["touchControlStick", "touch-control/stick.png", { "totalFrame": 1, "animated": false }],
 
-      ["platform", "platform.png", { "totalFrame": 1, "interval": 1, "totalLine": 1, "animated": false }]
-    ],
+        ["platform", "platform.png", { "totalFrame": 1, "interval": 1, "totalLine": 1, "animated": false }]]
+      )
+    }(),
 
     // a custom pool not loaded by default, you have to load it whenever you want (you can display a custom loader or just the default loader)
     aCustomPool: [
