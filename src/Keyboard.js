@@ -29,13 +29,9 @@ export default (max_life, defense, power) => ({
 	},
 	action(engine) {
 		if (engine.partie.hand.length > 0) {
-			let cardId = Math.round(Math.random() % engine.partie.hand.length);
-			let card = engine.partie.getRandomCard()
-			engine.partie.replaceCard(cardId, card)
+			engine.partie.replaceCard()
 			engine.ennemis.keyboard.power = false;
-			return ["execute steal", cardId]
 		}
-		return []
 	},
 	validation(engine) {
 		// transform a player card when the component reach a life level
