@@ -9,7 +9,7 @@ export default (Game = window.Game) => {
     y: 1080 / 2,
     pile: Game.Picker,
     sendParticles: false,
-    onPlaySpriteId: "heart",
+    onPlaySpriteId: "explosion",
     interactive: true,
     pointerdown: function (e) {
       if (this.pile === Game.Picker) {
@@ -170,7 +170,7 @@ export default (Game = window.Game) => {
       }
       return new Promise(resolve => {
         if (anim) {
-          this.fade(1, 0, 1000, false, () => {
+          this.fade(1, 0, 500, false, () => {
             dl()
             resolve()
           })
@@ -188,6 +188,7 @@ export default (Game = window.Game) => {
           this.moveTo(target, 2000)
           this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
           this.pile.removeCard(this)
+          console.log(this.onPlaySpriteId)
           Game.addParticle(this.onPlaySpriteId, target)
           this.destroy()
           this.pile.goToDefaultPos()

@@ -25,6 +25,7 @@ const images = {
       // [ "ship", "ayera/ship.png", { "totalFrame": 10, "totalLine": 1, "interval": 100, "animated":true, "isReversed": false } ]
       ["card", "shmup/card.png"],
       ["backCardPicker", "shmup/back.png"],
+      ["explosion", "shmup/explosion.png"],
       ["cardHighlight", "shmup/cardHighlight.png"],
       ["particle", "shmup/p-bullet.png", { "totalFrame": 10, "interval": 50, "animated": true, "loop": false }],
       ["heart", "shmup/heart.png"],

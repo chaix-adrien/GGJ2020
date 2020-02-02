@@ -7,7 +7,7 @@ export default (idSprite, toObj = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Ga
     x: toObj.x,
     y: toObj.y,
     idSprite,
-    renderer: new DE.SpriteRenderer({ spriteName: 'heart', scale: 1 }),
+    renderer: new DE.SpriteRenderer({ spriteName: idSprite, scale: 1 }),
     _kill: function () {
       setTimeout(() => {
         this.askToKill()

@@ -132,7 +132,7 @@ Game.onload = function () {
 
   DE.Inputs.on('keyDown', 'left', function () {
     function infiniteTurn() {
-      if (!(turn % 3))
+      if (!(turn % 3) && turn)
         Game.waitCardPicker(Game.Draw.content, 1).then((cards) => {
           console.log("card", cards)
           turn++
@@ -163,6 +163,14 @@ Game.onload = function () {
   });
 
   DE.Inputs.on('keyDown', 'right', function () {
+    const test = () => ({
+      init: function () {
+        this.x = 6
+        return this
+      },
+      x: 5
+    }.init())
+    console.log(test())
   });
 };
 window.Game = Game
