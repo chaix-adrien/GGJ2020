@@ -18,11 +18,9 @@ getDammage :function (damage) {
     }
   },
   play: function(cost) {
-    if (this.playable(cost)) {
-      this.mana -= cost;
-      return true;
-    }
-    return false;
+    this.mana -= cost;
+    this.mana = (this.mana < 0 ? 0 : this.mana)
+    window.Game.Mana.setMana(this.mana)
   },
   playable : function (cost) {
     if (this.mana < cost) {

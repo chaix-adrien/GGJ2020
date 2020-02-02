@@ -23,7 +23,7 @@ export default  (events, action, engine, player) => ({
   event : function () {
     this.guiEvents = []
     this.events.forEach(elem => {
-       var callback = (elem.triggerable(this.engine) ? elem.trigger(this.engine) : null);
+       var callback = (elem.triggerable(window.Engine) ? elem.trigger(window.Engine) : null);
        if (callback){
          console.log("Callback :", callback)
          this.guiEvents.push(callback)

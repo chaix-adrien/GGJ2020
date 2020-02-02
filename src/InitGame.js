@@ -5,9 +5,12 @@ import Player from './Player'
 import GameLoop from './GameLoop'
 import Event from './Event'
 import PromiseParam from './PromiseParam'
+import Mana from './Mana'
 
 const validDraw = (engine) => {
-  return engine.partie.hand.length === 0
+  console.log("ENGINE", engine)
+  console.log(engine.partie.hand.length)
+  return (engine.partie.hand.length === 0)
 }
 
 const playCard = (obj) => {
@@ -22,7 +25,63 @@ export default () => ({
       "name": "coup de poing",
       "description": "inflige 1 point de degat",
       "action": (target) => target.getDammage(1),
-      "cost": 5,
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
+      "png": "explosion",
+    },
+    {
+      "name": "coup de poing",
+      "description": "inflige 1 point de degat",
+      "action": (target) => target.getDammage(1),
+      "cost": 1,
       "png": "explosion",
     },
   ],
@@ -33,11 +92,6 @@ export default () => ({
     "None": (engine) => Promise.resolve(engine)
   },
   confEvent: [
-    {
-    "name": "choix de carte",
-    "validation": (engine) => engine.turn % 2 === 0,
-    "callback": () => (console.log("choix de carte"))
-  },
   {
     "name": "tour",
     "validation": (engine) => engine.player.is_alive(),
@@ -73,12 +127,13 @@ export default () => ({
     "validation": (engine) => engine.ennemis.validation,
     "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.delete),
   }
+
   ],
   init : function () {
     this.initCard()
     this.initEvent()
-
     this.initLoop()
+    window.Game.Mana.setMana(30)
 
   },
   initEvent : function(){
@@ -102,7 +157,7 @@ export default () => ({
   },
 
   initLoop : function (){
-    this.player =  Player("carlito", 30, 5);
+    this.player =  Player("carlito", 30, 30);
     this.engine = Engine(this.cards, [], this.player);
     window.Engine = this.engine
     var ennemis = Computer()
