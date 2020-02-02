@@ -1,9 +1,15 @@
+import Mob from './Mob'
+
 export default (max_life, defense, power) => ({
 	name: "mouse",
 	max_life: max_life,
 	life: max_life,
 	defense: defense,
 	power: power,
+	gameObj: Mob('souris', {x: 1600, y: 670}),
+	init : function () {
+		this.gameObj._engineEnnemi = this
+	},
 	getDammage(damage_value) {
 		// deal damage - % defense
 		this.life -= Math.round(damage_value - (damage_value * this.defense))

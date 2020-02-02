@@ -6,7 +6,7 @@ export default (max_life, defense, power) => ({
 	life: max_life,
 	defense: defense,
 	power: power,
-	gameObj: Mob('heart', {x: 50, y: 50}),
+	gameObj: Mob('clavier_1', {x: 1000, y: 610}),
 	init : function () {
 		this.gameObj._engineEnnemi = this
 	},
