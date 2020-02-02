@@ -226,7 +226,6 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
         //Game.addParticle(this.onPlaySpriteId, target || this)
         if (false && target) {
           this.moveTo(target, 2000)
-          Game.Mana.spendMana(this.manaCost)
           this.destroy()
           this.pile.goToDefaultPos()
           return resolve()
@@ -234,7 +233,6 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
           const toGo = { x: this.x, y: this.y - 200 }
           this.moveTo(toGo, 2000)
           console.log("SPEND", this.manaCost)
-          Game.Mana.spendMana(this.manaCost)
           //          this.destroy()
           Game.Draw.addCard(this, false)
           Game.Draw.goToDefaultPos()
