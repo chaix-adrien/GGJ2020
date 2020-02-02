@@ -159,13 +159,14 @@ export default () => ({
   initLoop : function (){
     this.player =  Player("carlito", 30, 30);
     this.engine = Engine(this.cards, [], this.player);
-    window.Engine = this.engine
     var ennemis = Computer()
     ennemis.init()
     console.log("======> Ennemis :", ennemis)
     this.engine = Engine(this.cards, ennemis, this.player);
     console.log("OK")
     this.gameLoop = GameLoop(this.events, this.action, this.engine, this.player)
+    window.Engine = this.engine
+
   },
   getLoop : function (){
     return this.gameLoop
