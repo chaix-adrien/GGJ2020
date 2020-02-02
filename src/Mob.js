@@ -1,10 +1,9 @@
 import DE from '@dreamirl/dreamengine';
 
-export default (spriteId = "heart", Game = window.Game) => {
+export default (spriteId = "heart",, pos = { x: 0, y: 0 }, Game = window.Game) => {
   const obj = new DE.GameObject({
     interactive: true,
-    x: 1920 / 2,
-    y: 200,
+    ...pos,
     targeted: false,
     pointerover: function () {
       if (Game.selectedCard && !this.targeted && Game.selectedCard.needTarget) {
