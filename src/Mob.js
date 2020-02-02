@@ -21,14 +21,13 @@ export default (spriteId = "heart", pos = { x: 0, y: 0 }, onHurtSpriteId = "expl
     pointerup: function () {
       this.pointerout()
       if (Game.selectedCard && Game.waitingForPlay && Game.selectedCard.needTarget) {
-        console.log("send", this)
         Game.waitingForPlay(Game.selectedCard, this)
       }
     },
     hurt(damages) {
       this.life -= damages
       Game.addParticle(this.onHurtSpriteId, this || this)
-      this.gameObjects.renderers[1].text = this.life + "/" + this.maxLife
+      this.gameObjects[0].renderers[1].text = this.life + "/" + this.maxLife
     },
 
     kill() {
@@ -65,8 +64,6 @@ export default (spriteId = "heart", pos = { x: 0, y: 0 }, onHurtSpriteId = "expl
     ],
     renderer: new DE.SpriteRenderer({ spriteName: spriteId, scale: 1 }),
   })
-
-  console.log("lif", obj.life + "/" + obj.maxLife)
 
   obj.gameObjects[0].renderers[1].text = obj.life + "/" + obj.maxLife
 
