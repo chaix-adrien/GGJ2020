@@ -26,6 +26,8 @@ export default (max_life, defense, power) => ({
 		return ["execute mana drain", engine.ennemis.screen.power]
 	},
 	validation(engine) {
+		if (!engine.ennemis.screen || !engine.ennemis.centralunite)
+			return false;
 		if (!engine.event[1] || !engine.ennemis.centralunite.is_alive())
 			return false
 		if (engine.event[1].name == "centralunite")

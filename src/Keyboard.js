@@ -29,13 +29,9 @@ export default (max_life, defense, power) => ({
 	},
 	action(engine) {
 		if (engine.partie.hand.length > 0) {
-			let cardId = Math.round(Math.random() % engine.partie.hand.length);
-			let card = engine.partie.getRandomCard()
-			engine.partie.replaceCard(cardId, card)
+			engine.partie.replaceCard()
 			engine.ennemis.keyboard.power = false;
-			return ["execute steal", cardId]
 		}
-		return []
 	},
 	validation(engine) {
 		// transform a player card when the component reach a life level
@@ -46,7 +42,7 @@ export default (max_life, defense, power) => ({
 			return false
 		if (engine.turn % 3 == 2)
 			return false;
-		if (!engine.ennemis.keyboard.is_alive())
+		if (!engine.ennemis.keyboard || !engine.ennemis.keyboard.is_alive())
 			return false;
 		if ((engine.ennemis.keyboard.life * 100 / engine.ennemis.keyboard.max_life) > 20)
 			engine.ennemis.keyboard.power = true
