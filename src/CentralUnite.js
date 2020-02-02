@@ -6,7 +6,7 @@ export default (max_life, defense, power) => ({
 	life: max_life,
 	defense: defense,
 	power: power,
-	gameObj: Mob('tour', {x: 600, y: 400}),
+	gameObj: Mob('tour', {x: 600, y: 400}, 'explosion', max_life),
 	init : function () {
 		this.gameObj._engineEnnemi = this
 	},

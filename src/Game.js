@@ -79,7 +79,7 @@ Game.onload = function () {
   Game.render.add(Game.camera);
   Game.Pointer = Pointer()
 
-  Game.Mana = Mana()
+  Game.Mana = Mana(30)
   Game.Mana.setMana(5)
 
   Game.CardPicker = CardPicker()
