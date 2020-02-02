@@ -14,10 +14,12 @@ export default (cards, ennemis, player) => ({
     giveCard : function() {
       this.getCard()
     },
-    action : function (cardId, target) {
+    action : function (obj) {
       var self = window.Engine
-      console.log("card ", cardId)
-      const card = self.partie.play(cardId._engineCard);
+      console.log(" action target ", obj.target)
+      var target = obj.target._engineEnnemi;
+      console.log("card ", obj.card)
+      const card = self.partie.play(obj.card._engineCard);
       if (self.player.play(card.cost)){
           card.action(target);
           self.event = [card, target];

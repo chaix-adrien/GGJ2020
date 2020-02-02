@@ -3,7 +3,7 @@ import Keyboard from "./Keyboard"
 import Mouse from "./Mouse"
 import CentralUnite from "./CentralUnite"
 
-export default () => ({ {
+export default () => ({
 	"screen": null,
 	"keyboard": null,
 	"mouse": null,
@@ -13,5 +13,6 @@ export default () => ({ {
 		this.keyboard = Keyboard(25, 0, true);
 		this.mouse = Mouse(15, 0, true);
 		this.centralunite = CentralUnite(70, 0, 2);
+		this.keyboard.init()
 	}
-}
+})

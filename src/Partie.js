@@ -9,9 +9,6 @@ export default (card, handSize = 10) => ({
     this.deck.push(card);
     return this.deck.length;
   },
-  huffleDraw : function (){
-    this.deck.sort(() => Math.random() - 0,5);
-  },
   shuffleDraw : function (){
     this.deck.sort(() => Math.random() - 0,5);
   },
@@ -20,10 +17,11 @@ export default (card, handSize = 10) => ({
       return ;
     }
     card = this.deck.pop();
+    card.pioche();
     this.hand.push(card);
   },
   giveCard : function () {
-    i = 0;
+    var i = 0;
     this.shuffleDraw();
     while (i < this.drawSize) {
       this.draw();
@@ -31,9 +29,10 @@ export default (card, handSize = 10) => ({
     }
   },
   play : function(cardId){
-    const card = this.hand[cardId];
+    const card = this.hand.find(elem => elem === cardId);
     this.hand = this.hand.filter(c => c !== card);
     this.deck.push(card);
+    this.card.gameObj.play()
     return card;
   }
 

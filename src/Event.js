@@ -11,10 +11,10 @@ export default (name, validation, callback, permanante=true) => ({
     if (!this.perma) {
       this.active = false;
     }
-    this.callback(engine);
+    return this.callback(engine)
   },
   triggerable : function (engine) {
-    return (this.validation(engine) && this.active ? true : false);
+    return ((this.validation(engine) && this.active) ? true : false);
   },
   active : function (){
     this.active = true;

@@ -1,4 +1,4 @@
-export default (max_life, defense, power) => ({ {
+export default (max_life, defense, power) => ({
 	name: "mouse",
 	max_life: max_life,
 	life: max_life,
@@ -11,8 +11,8 @@ export default (max_life, defense, power) => ({ {
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient
 		var real_heal = Math.round(healing_value - (healing_value * this.defense));
-		
-		((this.life + real_heal) > this.max_life) ? 
+
+		((this.life + real_heal) > this.max_life) ?
 			(this.life = this.max_life) : (this.life += real_heal)
 	},
 	str() {
@@ -47,4 +47,4 @@ export default (max_life, defense, power) => ({ {
 			return true
 		return false
 	}
-}
+})

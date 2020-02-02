@@ -1,4 +1,4 @@
-export default (max_life, defense, power) => ({ {
+export default (max_life, defense, power) => ({
 	name: "centralunite",
 	max_life: max_life,
 	life: max_life,
@@ -11,8 +11,8 @@ export default (max_life, defense, power) => ({ {
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient
 		var real_heal = Math.round(healing_value - (healing_value * this.defense));
-		
-		((this.life + real_heal) > this.max_life) ? 
+
+		((this.life + real_heal) > this.max_life) ?
 			(this.life = this.max_life) : (this.life += real_heal)
 	},
 	str() {
@@ -27,10 +27,10 @@ export default (max_life, defense, power) => ({ {
 		for (let name in engine.ennemis) {
 			// we're searching for lowest component life percentage
 			if (!fenemy && engine.ennemis[name].is_alive())
-				fenemy = engine.ennemis[name] 
+				fenemy = engine.ennemis[name]
 			else if	(engine.ennemis[name].is_alive() && (fenemy.life * 100 / fenemy.max_life) >
 				(engine.ennemis[name].life * 100 / engine.ennemis[name].max_life))
-				fenemy = engine.ennemis[name] 
+				fenemy = engine.ennemis[name]
 		}
 		if (!fenemy)
 			return []
@@ -38,7 +38,7 @@ export default (max_life, defense, power) => ({ {
 		return ["execute heal", fenemy.name]
 	},
 	validation(engine) {
-		// if target is the cu trigger screen event 
+		// if target is the cu trigger screen event
 		if (!engine.event[1] || !engine.computer.centralunite.is_alive())
 			return false;
 		if (!engine.event[1].name == "centralunite")
@@ -46,4 +46,4 @@ export default (max_life, defense, power) => ({ {
 			return true;
 		return false
 	}
-}
+})

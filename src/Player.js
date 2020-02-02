@@ -9,7 +9,7 @@ getDammage :function (damage) {
     }
   },
   is_alive : function () {
-    return (this.life < 0 ? False : True);
+    return (this.life < 0 ? false : true);
   },
   heal : function (heal){
     this.life += heal;

@@ -7,9 +7,6 @@ import Event from './Event'
 import PromiseParam from './PromiseParam'
 
 const validDraw = (engine) => {
-  console.log("trigger valid draw")
-  console.log(engine)
-  console.log(engine.partie.hand.length === 0)
   return engine.partie.hand.length === 0
 }
 
@@ -49,28 +46,23 @@ export default () => ({
   },
   {
     "name": "centralunite",
-    "validation": (engine) => true,
-    "callback": (engine) =>  PromiseParam(7, "none", [], engine.ennemie.centralunite.action),
-  },
-  {
-    "name": "centralunite",
-    "validation": (engine) => engine.ennemie.centralunite.validation(),
-    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.centralunite.action),
+    "validation": (engine) => engine.ennemis.centralunite.validation,
+    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.centralunite.action),
   },
   {
     "name": "screen",
-    "validation": (engine) => engine.ennemie.screen.validation(),
-    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.screen.action),
+    "validation": (engine) => engine.ennemis.screen.validation,
+    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.screen.action),
   },
   {
     "name": "keyboard",
-    "validation": (engine) => engine.ennemie.keyboard.validation(),
-    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.keyboard.action),
+    "validation": (engine) => engine.ennemis.keyboard.validation,
+    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.keyboard.action),
   },
   {
     "name": "mouse",
-    "validation": (engine) => engine.ennemie.mouse.validation(),
-    "callback": (engine) =>  PromiseParam(2, "none", [], engine.ennemie.mouse.action),
+    "validation": (engine) => engine.ennemis.mouse.validation,
+    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.mouse.action),
   }
   ],
   init : function () {
@@ -105,11 +97,12 @@ export default () => ({
     window.Engine = this.engine
     var ennemis = Computer()
     ennemis.init()
+    console.log("======> Ennemis :", ennemis)
     this.engine = Engine(this.cards, ennemis, this.player);
-    this.gameLoop = GameLoop(this.events, this.action, this.engine, this.player, [])
+    console.log("OK")
+    this.gameLoop = GameLoop(this.events, this.action, this.engine, this.player)
   },
   getLoop : function (){
-    console.log("GetLoop")
     return this.gameLoop
   }
 })

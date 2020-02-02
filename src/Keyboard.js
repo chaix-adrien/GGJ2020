@@ -1,9 +1,15 @@
-export default (max_life, defense, power) => ({ {
+import Mob from './Mob'
+
+export default (max_life, defense, power) => ({
 	name: "keyboard",
 	max_life: max_life,
 	life: max_life,
 	defense: defense,
 	power: power,
+	gameObj: Mob('heart', {x: 50, y: 50}),
+	init : function () {
+		this.gameObj._engineEnnemi = this
+	},
 	getDammage(damage_value) {
 		// deal damage - % defense
 		this.life -= Math.round(damage_value - (damage_value * this.defense))
@@ -11,8 +17,8 @@ export default (max_life, defense, power) => ({ {
 	heal(healing_value) {
 		// heal based on defense lvl. If component is really weak, the heal will be more efficient
 		var real_heal = Math.round(healing_value - (healing_value * this.defense));
-		
-		((this.life + real_heal) > this.max_life) ? 
+
+		((this.life + real_heal) > this.max_life) ?
 			(this.life = this.max_life) : (this.life += real_heal)
 	},
 	str() {
@@ -48,4 +54,4 @@ export default (max_life, defense, power) => ({ {
 			return true
 		return false
 	}
-}
+})
