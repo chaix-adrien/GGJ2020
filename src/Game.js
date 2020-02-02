@@ -141,7 +141,7 @@ Game.onload = function () {
 
   //=======================================================
   var turn = 0
-  const gm =  InitGame()
+  const gm = InitGame()
   gm.init(Game)
   var gloop = gm.getLoop()
   gloop.event()
