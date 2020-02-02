@@ -1,8 +1,1 @@
-[
-  { "file": "explosion", "path": ".\\explosion.png" },
-  { "file": "heart", "path": ".\\heart.png" },
-  {
-    "file": "explosion - Copy",
-    "path": ".\\Nouveau dossier\\explosion - Copy.png"
-  }
-]
+[{"file": "explosion", "path": ".\\explosion.png"}, {"file": "heart", "path": ".\\heart.png"}, {"file": "explosionAS", "path": ".\\Nouveau dossier\\explosionAS.png"}]

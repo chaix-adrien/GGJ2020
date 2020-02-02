@@ -123,7 +123,7 @@ export default (Game = window.Game) => {
 
 
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {
-      const espace = 350
+      const espace = 300
       const out = {
         rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
         x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
@@ -156,6 +156,9 @@ export default (Game = window.Game) => {
         renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
       })
     ],
+    createParticle: function () {
+      this.drawLineToMouse()
+    },
     // ================================ GUIGUI
     destroy: function (anim = true, direction) {
       this.deselect()
@@ -213,9 +216,6 @@ export default (Game = window.Game) => {
           resolve(this)
         })
       })
-    },
-    createParticle: function () {
-      this.drawLineToMouse()
     },
   })
   return out

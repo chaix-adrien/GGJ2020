@@ -22,7 +22,7 @@
     "prettier": "^1.18.2"
   },
   "scripts": {
-    "dumpAs": "python ./assets/imgs/customLoad/generateJson.py",
+    "dumpAs": "cd ./assets/imgs/customLoad/ && python ./generateJson.py",
     "start": "yarn dumpAs && cross-env yarn dev",
     "dev": "cross-env parcel html/browser.html -d dist/dev/",
     "build": "cross-env parcel build html/browser.html -d dist/prod/",
