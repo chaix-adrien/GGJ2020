@@ -25,7 +25,7 @@ const images = {
       const perso = customLoad.map(l => {
         const out = []
         out.push(l.file)
-        out.push("customLoad\\" + l.path.split(".\\")[1])
+        out.push("customLoad/" + l.path.split(".\\")[1])
         return out
       })
       console.log(perso)
