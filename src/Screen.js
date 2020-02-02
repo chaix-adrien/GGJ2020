@@ -22,14 +22,14 @@ export default (max_life, defense, power) => ({
 		return (this.life > 0)
 	},
 	action(engine) {
-		engine.player.mana -= engine.ennemie.screen.power
-		return ["execute mana drain", engine.ennemie.screen.power]
+		engine.player.mana -= engine.ennemis.screen.power
+		return ["execute mana drain", engine.ennemis.screen.power]
 	},
 	validation(engine) {
-		if (!engine.event[1] || !engine.ennemie.centralunite.is_alive())
+		if (!engine.event[1] || !engine.ennemis.centralunite.is_alive())
 			return false
 		if (engine.event[1].name == "centralunite")
-			return (engine.ennemie.screen.is_alive() && engine.turn % 3 != 2)
+			return (engine.ennemis.screen.is_alive() && engine.turn % 3 != 2)
 		return false
 	}
 })

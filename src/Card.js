@@ -15,6 +15,6 @@ export default (name, description, action, cost,obj) => ({
   },
   play: function (target) {
     this.action(target)
-    this.gameObject.play(target)
+    this.gameObj.play(target)
   }
 }).init()
