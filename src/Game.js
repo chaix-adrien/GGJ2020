@@ -79,7 +79,6 @@ Game.onload = function () {
   Game.render.add(Game.camera);
   Game.Pointer = Pointer()
 
-  Game.Mob = Mob()
   Game.Mana = Mana()
   Game.Mana.setMana(5)
 
@@ -102,8 +101,6 @@ Game.onload = function () {
   //Array.from(Array(5).keys()).forEach((_, id) => Game.Draw.addCard(CardDisplay()))
   //Game.Draw.goToDefaultPos()
   Game.scene.add(
-    Game.Hand,
-    Game.Mob,
     Game.Hand,
     Game.Draw,
     Game.Picker,
@@ -146,9 +143,6 @@ Game.onload = function () {
   var turn = 0
   const gm =  InitGame()
   gm.init(Game)
-  gm.initCard()
-  gm.initLoop()
-  gm.getLoop()
   var gloop = gm.getLoop()
   gloop.event()
   gloop.loop()

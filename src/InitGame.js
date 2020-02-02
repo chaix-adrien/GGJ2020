@@ -76,8 +76,9 @@ export default () => ({
   ],
   init : function () {
     this.initCard()
-    this.initLoop()
     this.initEvent()
+
+    this.initLoop()
 
   },
   initEvent : function(){
