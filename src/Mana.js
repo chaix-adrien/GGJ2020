@@ -2,7 +2,7 @@ import DE from '@dreamirl/dreamengine';
 const textMana = new DE.TextRenderer('', {
   textStyle: {
     fill: 'black',
-    fontSize: 35,
+    fontSize: 50,
     fontFamily: 'Snippet, Monaco, monospace',
     strokeThickness: 1,
     align: 'center',
@@ -10,11 +10,13 @@ const textMana = new DE.TextRenderer('', {
 })
 
 export default (maxMana = 5, Game = window.Game) => new DE.GameObject({
-  x: 120,
-  y: 1080 - 120,
+  x: 1750,
+  y: 200,
   maxMana,
   manaPool: maxMana,
   spendMana: function (ammount) {
+    console.log("SPEND", ammount)
+
     if (this.manaPool - ammount >= 0) {
       this.setMana(this.manaPool - ammount)
       return true
@@ -31,13 +33,13 @@ export default (maxMana = 5, Game = window.Game) => new DE.GameObject({
   canPlay: function (card) {
     return this.manaPool >= card.manaCost
   },
-  renderers: [
-    new DE.RectRenderer(100, 100, '0xFFCDCD', {
-      lineStyle: [4, '0x000000', 1],
-      fill: true,
-      x: -50,
-      y: -50,
+  renderer: new DE.SpriteRenderer({ spriteName: "point_mana", scale: 1 }),
+  gameObjects: [
+    new DE.GameObject({
+      x: 50, y: -50,
+      renderers: [
+        textMana
+      ],
     }),
-    textMana
   ],
 });
