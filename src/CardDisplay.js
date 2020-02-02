@@ -177,6 +177,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
     },
     // ================================ GUIGUI
     destroy: function (anim = true, direction) {
+      console.log("DESTROY")
       this.deselect()
       this.interactive = false
       this.zindex = 200
@@ -222,7 +223,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
       return new Promise(resolve => {
         this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
         this.pile.removeCard(this)
-        Game.addParticle(this.onPlaySpriteId, target || this)
+        //Game.addParticle(this.onPlaySpriteId, target || this)
         if (false && target) {
           this.moveTo(target, 2000)
           Game.Mana.spendMana(this.manaCost)
@@ -232,6 +233,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCos
         } else {
           const toGo = { x: this.x, y: this.y - 200 }
           this.moveTo(toGo, 2000)
+          console.log("SPEND", this.manaCost)
           Game.Mana.spendMana(this.manaCost)
           //          this.destroy()
           Game.Draw.addCard(this, false)
