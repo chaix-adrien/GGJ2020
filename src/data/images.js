@@ -13,7 +13,7 @@
  *
  * name, and url are required
  */
-const fs = require('fs')
+import customLoad from "../../assets/imgs/customLoad/importAssets.json"
 const images = {
   // images folder name 
   baseUrl: "imgs/",
@@ -22,8 +22,14 @@ const images = {
   pools: {
     // loaded when engine is inited
     default: function () {
-      console.log('FS', fs)
-      return ["explosion", "heart"].map(a => [a, "customLoad\\" + a + ".png"]).concat(
+      const perso = customLoad.map(l => {
+        const out = []
+        out.push(l.file)
+        out.push("customLoad\\" + l.path.split(".\\")[1])
+        return out
+      })
+      console.log(perso)
+      return perso.concat(
         [["card", "shmup/card.png"],
         ["backCardPicker", "shmup/back.png"],
         ["cardHighlight", "shmup/cardHighlight.png"],
