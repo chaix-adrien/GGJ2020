@@ -18,9 +18,9 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
         }
         else
           this.deselect()
+      } else
+        this.selected ? this.deselect() : this.select()
 
-      } else if (!Game.selectedCard)
-        this.select()
     },
     pointerout: function () {
       if (this.pile === Game.Picker && this.selected) return
@@ -40,6 +40,10 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
       this.selected = true
       this.setHighlight(0.5)
       this.z = -1
+      this.selectedRecently = true
+      setTimeout(() => {
+        this.selectedRecently = false
+      }, 500)
       if (this.pile === Game.Picker) {
 
       }
@@ -55,7 +59,7 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
       this.selected = false
       this.setHighlight(0)
       this.scaleTo({ x: 1, y: 1 }, 100)
-
+      this.goToDefaultPos()
       if (this.pile === Game.Picker) {
 
       }

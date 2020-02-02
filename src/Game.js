@@ -61,10 +61,12 @@ Game.onload = function () {
   Game.camera.pointerup = function (pos, e) {
     if (!Game.selectedCard) return
     if (Game.selectedCard.isOnPicker) return
-    Game.selectedCard.goToDefaultPos()
+    if (Game.selectedCard && !Game.selectedCard.selectedRecently) {
+      Game.selectedCard.goToDefaultPos()
+      Game.selectedCard.deselect()
+    }
     //Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
 
-    Game.selectedCard.deselect()
   };
   Game.render.add(Game.camera);
   Game.Pointer = Pointer()
