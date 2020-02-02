@@ -1,7 +1,7 @@
 import DE from '@dreamirl/dreamengine';
 import ParticleDisplay from "./ParticleDisplay"
 
-export default (Game = window.Game) => {
+export default (onPlaySpriteId = "explosion", Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
     selected: false,
@@ -9,7 +9,7 @@ export default (Game = window.Game) => {
     y: 1080 / 2,
     pile: Game.Picker,
     sendParticles: false,
-    onPlaySpriteId: "explosion",
+    onPlaySpriteId: onPlaySpriteId,
     interactive: true,
     pointerdown: function (e) {
       if (this.pile === Game.Picker) {
@@ -18,9 +18,9 @@ export default (Game = window.Game) => {
         }
         else
           this.deselect()
+      } else
+        this.selected ? this.deselect() : this.select()
 
-      } else if (!Game.selectedCard)
-        this.select()
     },
     pointerout: function () {
       if (this.pile === Game.Picker && this.selected) return
@@ -40,6 +40,10 @@ export default (Game = window.Game) => {
       this.selected = true
       this.setHighlight(0.5)
       this.z = -1
+      this.selectedRecently = true
+      setTimeout(() => {
+        this.selectedRecently = false
+      }, 500)
       if (this.pile === Game.Picker) {
 
       }
@@ -55,7 +59,7 @@ export default (Game = window.Game) => {
       this.selected = false
       this.setHighlight(0)
       this.scaleTo({ x: 1, y: 1 }, 100)
-
+      this.goToDefaultPos()
       if (this.pile === Game.Picker) {
 
       }
@@ -106,7 +110,13 @@ export default (Game = window.Game) => {
         out.x += Game.Hand.x
         out.y += Game.Hand.y
       } else if (this.pile === Game.Draw) {
-        out = { x: Game.Draw.x, y: Game.Draw.y, rotation: 0 }
+        const min = Math.PI / 10
+        const max = Math.PI / 10 * -1
+        out = {
+          x: Game.Draw.x,
+          y: Game.Draw.y,
+          rotation: Math.random() * (max - min) + min
+        }
       } else if (this.pile === Game.Picker) {
         out = this.getHandPosition(Game.Picker.content.length, Game.Picker.content.indexOf(this))
         out.x += Game.Picker.x
@@ -120,10 +130,8 @@ export default (Game = window.Game) => {
       this.rotation = pos.rotation
       this.moveTo(pos, 200)
     },
-
-
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {
-      const espace = 350
+      const espace = 300
       const out = {
         rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
         x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
@@ -156,6 +164,9 @@ export default (Game = window.Game) => {
         renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
       })
     ],
+    createParticle: function () {
+      this.drawLineToMouse()
+    },
     // ================================ GUIGUI
     destroy: function (anim = true, direction) {
       this.deselect()
@@ -197,6 +208,9 @@ export default (Game = window.Game) => {
         }
       })
     },
+    draw: function () {
+      return Game.Draw.draw(this)
+    },
     spawnInto: function (pile) {
       this.x = 1920 / 2
       this.y = 1080 / 2
@@ -209,9 +223,6 @@ export default (Game = window.Game) => {
           resolve(this)
         })
       })
-    },
-    createParticle: function () {
-      this.drawLineToMouse()
     },
   })
   return out

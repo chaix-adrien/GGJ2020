@@ -61,10 +61,12 @@ Game.onload = function () {
   Game.camera.pointerup = function (pos, e) {
     if (!Game.selectedCard) return
     if (Game.selectedCard.isOnPicker) return
-    Game.selectedCard.goToDefaultPos()
+    if (Game.selectedCard && !Game.selectedCard.selectedRecently) {
+      Game.selectedCard.goToDefaultPos()
+      Game.selectedCard.deselect()
+    }
     //Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
 
-    Game.selectedCard.deselect()
   };
   Game.render.add(Game.camera);
   Game.Pointer = Pointer()
@@ -100,6 +102,9 @@ Game.onload = function () {
 
   );
 
+  //===============================
+  //========= API==================
+  //===============================
   Game.waitForCardPlay = () => {
     return new Promise(resolve => {
       Game.waitingForPlay = (card, target) => {
@@ -128,6 +133,7 @@ Game.onload = function () {
     })
   }
 
+  //=======================================================
   var turn = 0
 
   DE.Inputs.on('keyDown', 'left', function () {
@@ -155,7 +161,7 @@ Game.onload = function () {
   });
 
   DE.Inputs.on('keyDown', 'up', function () {
-    Game.Draw.draw(Game.Draw.content[0])
+    Game.Draw.content[0].draw()
   });
 
   DE.Inputs.on('keyDown', 'down', function () {
