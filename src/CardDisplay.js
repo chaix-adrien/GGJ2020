@@ -1,7 +1,7 @@
 import DE from '@dreamirl/dreamengine';
 import ParticleDisplay from "./ParticleDisplay"
 
-export default (Game = window.Game) => {
+export default (onPlaySpriteId = "explosion", Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
     selected: false,
@@ -9,7 +9,7 @@ export default (Game = window.Game) => {
     y: 1080 / 2,
     pile: Game.Picker,
     sendParticles: false,
-    onPlaySpriteId: "explosion",
+    onPlaySpriteId: onPlaySpriteId,
     interactive: true,
     pointerdown: function (e) {
       if (this.pile === Game.Picker) {
@@ -106,7 +106,13 @@ export default (Game = window.Game) => {
         out.x += Game.Hand.x
         out.y += Game.Hand.y
       } else if (this.pile === Game.Draw) {
-        out = { x: Game.Draw.x, y: Game.Draw.y, rotation: 0 }
+        const min = Math.PI / 10
+        const max = Math.PI / 10 * -1
+        out = {
+          x: Game.Draw.x,
+          y: Game.Draw.y,
+          rotation: Math.random() * (max - min) + min
+        }
       } else if (this.pile === Game.Picker) {
         out = this.getHandPosition(Game.Picker.content.length, Game.Picker.content.indexOf(this))
         out.x += Game.Picker.x
@@ -120,8 +126,6 @@ export default (Game = window.Game) => {
       this.rotation = pos.rotation
       this.moveTo(pos, 200)
     },
-
-
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {
       const espace = 300
       const out = {
