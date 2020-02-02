@@ -1,10 +1,10 @@
 import Partie from './Partie'
 
-export default (cards, enemi = [], player) => ({
+export default (cards, ennemis, player) => ({
     turn : 0,
     player : player,
     partie : Partie(cards),
-    enemi : enemi,
+    ennemis : ennemis,
     event : [],
     getCard : function() {
       playable =  []
