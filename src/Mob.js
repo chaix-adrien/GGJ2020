@@ -24,7 +24,7 @@ export default (spriteId = "heart", pos = { x: 0, y: 0 }, onHurtSpriteId = "expl
         Game.waitingForPlay(Game.selectedCard, this)
       }
     },
-    hurt(damages) {
+    hurt: function (damages) {
       this.life -= damages
       Game.addParticle(this.onHurtSpriteId, this || this)
       this.gameObjects[0].renderers[1].text = this.life + "/" + this.maxLife
