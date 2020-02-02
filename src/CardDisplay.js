@@ -5,6 +5,8 @@ export default (Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
     selected: false,
+    x: 1920 / 2,
+    y: 1080 / 2,
     pile: Game.Picker,
     sendParticles: false,
     onPlaySpriteId: "heart",
@@ -12,7 +14,6 @@ export default (Game = window.Game) => {
     pointerdown: function (e) {
       if (this.pile === Game.Picker) {
         if (Game.CardPicker.getSelection().length + 1 <= Game.CardPicker.toPick) {
-          console.log("is selected", !this.selected)
           this.selected ? this.deselect() : this.select()
         }
         else
@@ -33,9 +34,7 @@ export default (Game = window.Game) => {
       this.removeAutomatism("createParticle")
     },
 
-    createParticle: function () {
-      this.drawLineToMouse()
-    },
+
 
     select: function () {
       this.selected = true
@@ -51,7 +50,6 @@ export default (Game = window.Game) => {
       }
     },
     deselect: function () {
-      console.log("deselectme")
       if (Game.selectedCard !== this && this.pile !== Game.Picker) return
       this.selected = false
       this.z = 0
@@ -98,63 +96,29 @@ export default (Game = window.Game) => {
       this.y += !dir ? 1 : -1
       this.z -= 0.1
     },
-    destroy: function (anim = true, direction) {
-      this.deselect()
-      this.zindex = 450
-      const dl = () => {
-        this.zindex = 450
-        if (this.pile)
-          this.pile.removeCard(this)
-        this.askToKill()
-        Game.removeMouseListener(this.onpointermove)
+
+    getDefaultPos: function () {
+      var out = {}
+      if (this.pile === Game.Hand) {
+        out = this.getHandPosition()
+        out.x += Game.Hand.x
+        out.y += Game.Hand.y
+      } else if (this.pile === Game.Draw) {
+        out = { x: Game.Draw.x, y: Game.Draw.y, rotation: 0 }
+      } else if (this.pile === Game.Picker) {
+        out = this.getHandPosition(Game.Picker.content.length, Game.Picker.content.indexOf(this))
+        out.x += Game.Picker.x
+        out.y += Game.Picker.y
       }
-      return new Promise(resolve => {
-        if (anim) {
-          this.fade(1, 0, 1000, false, () => {
-            dl()
-            resolve()
-          })
-          this.addAutomatism("deleteAnim", "_deleteAnim", { interval: 5, value1: direction })
-        } else {
-          setTimeout(resolve, 1000)
-          dl()
-        }
-      })
+      return out
     },
 
     goToDefaultPos: function () {
-      if (this.pile === Game.Hand) {
-        const pos = this.getHandPosition()
-        pos.x += Game.Hand.x
-        pos.y += Game.Hand.y
-        this.rotation = pos.rotation
-        this.moveTo(pos, 200)
-      } else if (this.pile === Game.Draw) {
-        this.moveTo(this.pile, 200)
-      } else if (this.pile === Game.Picker) {
-        const pos = this.getHandPosition(Game.Picker.content.length, Game.Picker.content.indexOf(this))
-        pos.x += Game.Picker.x
-        pos.y += Game.Picker.y
-        this.rotation = pos.rotation
-        this.moveTo(pos, 200)
-      }
-
+      const pos = this.getDefaultPos()
+      this.rotation = pos.rotation
+      this.moveTo(pos, 200)
     },
 
-    play: function (target) {
-      return new Promise(resolve => {
-        if (target) {
-          this.moveTo(target, 2000)
-          this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
-          this.pile.removeCard(this)
-          Game.addParticle(this.onPlaySpriteId, target)
-          this.destroy()
-          this.pile.goToDefaultPos()
-
-          return resolve()
-        }
-      })
-    },
 
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {
       console.log("getHAndppos", total, id)
@@ -177,12 +141,6 @@ export default (Game = window.Game) => {
 
         },
         automatisms: [['updateMe', 'updateMe', { value1: Game.Pointer }]],
-
-        /*              pointerover: function () {
-                        this.updatable = false
-                        this.interactive = false
-                        this.askToKill()
-                      },*/
         rotation: Math.random() * Math.PI,
         renderer: new DE.SpriteRenderer({ spriteName: 'particle', scale: 1 }),
       });
@@ -196,8 +154,63 @@ export default (Game = window.Game) => {
         disable: function (time) { console.log("disable"); this.fade(this.alpha, 0, time) },
         renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
       })
-    ]
+    ],
+    // ================================ GUIGUI
+    destroy: function (anim = true, direction) {
+      this.deselect()
+      this.interactive = false
+      this.zindex = 450
+      const dl = () => {
+        this.zindex = 450
+        if (this.pile)
+          this.pile.removeCard(this)
+        this.askToKill()
+        Game.removeMouseListener(this.onpointermove)
+      }
+      return new Promise(resolve => {
+        if (anim) {
+          this.fade(1, 0, 1000, false, () => {
+            dl()
+            resolve()
+          })
+          this.addAutomatism("deleteAnim", "_deleteAnim", { interval: 5, value1: direction })
+        } else {
+          setTimeout(resolve, 1000)
+          dl()
+        }
+      })
+    },
+
+    play: function (target) {
+      return new Promise(resolve => {
+        if (target) {
+          this.moveTo(target, 2000)
+          this.scaleTo({ x: 1.01, y: 1.01 }, 10000)
+          this.pile.removeCard(this)
+          Game.addParticle(this.onPlaySpriteId, target)
+          this.destroy()
+          this.pile.goToDefaultPos()
+
+          return resolve()
+        }
+      })
+    },
+    spawnInto: function (pile) {
+      this.x = 1920 / 2
+      this.y = 1080 / 2
+      this.rotation = Math.PI / 10
+      return new Promise(resolve => {
+        pile.addCard(this, false, false)
+        this.fadeIn(300, true, () => {
+          this.goToDefaultPos()
+          pile.goToDefaultPos()
+          resolve(this)
+        })
+      })
+    },
+    createParticle: function () {
+      this.drawLineToMouse()
+    },
   })
-  Game.scene.add(out)
   return out
 }

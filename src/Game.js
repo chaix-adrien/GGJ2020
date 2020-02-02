@@ -61,7 +61,6 @@ Game.onload = function () {
   Game.camera.pointerup = function (pos, e) {
     if (!Game.selectedCard) return
     if (Game.selectedCard.isOnPicker) return
-    console.log(Game.selectedCard.isOnPicker)
     Game.selectedCard.goToDefaultPos()
     //Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
 
@@ -104,7 +103,6 @@ Game.onload = function () {
   Game.waitForCardPlay = () => {
     return new Promise(resolve => {
       Game.waitingForPlay = (card, target) => {
-        console.log("ici", card, target)
         Game.waitingForPlay = null
         return resolve({ card, target })
       }
@@ -140,7 +138,8 @@ Game.onload = function () {
           turn++
           //cards[0].play(Game.Mob)
           //Game.Hand.switchCards(cards[1], Game.Hand.content[0])
-          cards[0].destroy()
+          const card = CardDisplay()
+          card.spawnInto(Game.Hand)
           infiniteTurn()
 
         })
