@@ -115,8 +115,8 @@ Game.onload = function () {
     })
   }
 
-  Game.waitCardPicker = (cardPool, toPick) => {
-    Game.CardPicker.pick(cardPool, toPick)
+  Game.waitCardPicker = (cardPool, toPick, pile = Game.Picker) => {
+    Game.CardPicker.pick(cardPool, toPick, pile)
     return new Promise(resolve => {
       Game.waitingForPick = (cards) => {
         Game.waitingForPick = null
@@ -138,8 +138,8 @@ Game.onload = function () {
 
   DE.Inputs.on('keyDown', 'left', function () {
     function infiniteTurn() {
-      if (!(turn % 3) && turn)
-        Game.waitCardPicker(Game.Draw.content, 1).then((cards) => {
+      if (!(turn % 3))
+        Game.waitCardPicker(Game.Hand.content, 1, Game.Hand).then((cards) => {
           console.log("card", cards)
           turn++
           //cards[0].play(Game.Mob)
@@ -165,7 +165,7 @@ Game.onload = function () {
   });
 
   DE.Inputs.on('keyDown', 'down', function () {
-    Game.Hand.switchCards(Game.Draw.content[0], Game.Hand.content[0])
+    Game.Draw.content[0].switchWith(Game.Hand.content[0])
   });
 
   DE.Inputs.on('keyDown', 'right', function () {
