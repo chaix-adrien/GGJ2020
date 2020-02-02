@@ -11,16 +11,17 @@ export default (cards, enemi = [], player) => ({
       this.partie.hand.forEach((elem) =>  this.player.playable(elem.cost) ? elem.playable = true : elem.playable = false );
       return this.partie.hand
     },
+    giveCard : function() {
+      this.getCard()
+    },
     action : function (cardId, target) {
-    this.event = [];
-      card = this.partie.play(cardId);
-      if (this.player.play(card.cost)){
+      var self = window.Engine
+      console.log("card ", cardId)
+      const card = self.partie.play(cardId._engineCard);
+      if (self.player.play(card.cost)){
           card.action(target);
-          this.event = [card, target];
-          this.turn += 1;
-          if (this.partie.hand.length === 0) {
-            this.partie.giveCard();
-          }
+          self.event = [card, target];
+          self.turn += 1;
           return true;
       }
       return false;
