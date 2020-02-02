@@ -16,9 +16,7 @@ export default (cards, ennemis, player) => ({
     },
     action : function (obj) {
       var self = window.Engine
-      console.log(" action target ", obj.target)
       var target = obj.target._engineEnnemi;
-      console.log("card ", obj.card)
       const card = self.partie.play(obj.card._engineCard);
       if (self.player.play(card.cost)){
           card.action(target);

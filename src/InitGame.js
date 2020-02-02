@@ -10,6 +10,10 @@ const validDraw = (engine) => {
   return engine.partie.hand.length === 0
 }
 
+const playCard = (obj) => {
+
+}
+
 import Computer from './Computer'
 
 export default () => ({
@@ -37,7 +41,7 @@ export default () => ({
   {
     "name": "tour",
     "validation": (engine) => engine.player.is_alive(),
-    "callback":  () => PromiseParam(5, "play", [], window.Engine.action)
+    "callback":  () => PromiseParam(5, "play", [], (window.Engine.action))
   },
   {
     "name": "draw",
