@@ -29,7 +29,7 @@ export default (max_life, defense, power) => ({
 		return (this.life > 0)
 	},
 	action(engine) {
-		engine.player.mana -= engine.ennemis.screen.power
+		engine.player.play(engine.ennemis.screen.power)
 		return ["execute mana drain", engine.ennemis.screen.power]
 	},
 	validation(engine) {
