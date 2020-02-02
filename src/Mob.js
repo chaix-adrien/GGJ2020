@@ -6,7 +6,7 @@ export default (Game = window.Game) => new DE.GameObject({
   y: 200,
   targeted: false,
   pointerover: function () {
-    if (Game.selectedCard && !this.targeted) {
+    if (Game.selectedCard && !this.targeted && Game.selectedCard.needTarget) {
       this.targeted = true
       this.addAutomatism('animTargeted', "_animTargeted", { interval: 10, value1: this })
     }
@@ -17,7 +17,7 @@ export default (Game = window.Game) => new DE.GameObject({
   },
   pointerup: function () {
     this.pointerout()
-    if (Game.selectedCard && Game.waitingForPlay) {
+    if (Game.selectedCard && Game.waitingForPlay && Game.selectedCard.needTarget) {
       console.log("send", this)
       Game.waitingForPlay(Game.selectedCard, this)
     }

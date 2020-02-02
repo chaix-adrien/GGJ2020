@@ -63,7 +63,13 @@ Game.onload = function () {
     if (Game.selectedCard.isOnPicker) return
     if (Game.selectedCard && !Game.selectedCard.selectedRecently) {
       Game.selectedCard.goToDefaultPos()
-      Game.selectedCard.deselect()
+      console.log(Game.waitingForPlay)
+      if (Game.selectedCard.needTarget)
+        Game.selectedCard.deselect()
+      else if (Game.waitingForPlay) {
+        Game.waitingForPlay(Game.selectedCard, null)
+        Game.selectedCard.deselect()
+      }
     }
     //Game.selectedCard.moveTo(Game.selectedCard.getHandPosition(), 500);
 
@@ -88,7 +94,7 @@ Game.onload = function () {
     y: 1080 / 2
   })
 
-  Array.from(Array(5).keys()).forEach((_, id) => Game.Hand.addCard(CardDisplay()))
+  Array.from(Array(5).keys()).forEach((_, id) => Game.Hand.addCard(CardDisplay("explosion", "carte_" + (id + 1) + "_plus")))
   Game.Hand.goToDefaultPos()
 
   Array.from(Array(5).keys()).forEach((_, id) => Game.Draw.addCard(CardDisplay()))
@@ -109,7 +115,7 @@ Game.onload = function () {
     return new Promise(resolve => {
       Game.waitingForPlay = (card, target) => {
         Game.waitingForPlay = null
-        return resolve({ card, target })
+        return resolve(card, target)
       }
       return resolve
     })
@@ -139,7 +145,7 @@ Game.onload = function () {
   DE.Inputs.on('keyDown', 'left', function () {
     function infiniteTurn() {
       if (!(turn % 3))
-        Game.waitCardPicker(Game.Hand.content, 1, Game.Hand).then((cards) => {
+        Game.waitCardPicker(Game.Hand.content, 1).then((cards) => {
           console.log("card", cards)
           turn++
           //cards[0].play(Game.Mob)
@@ -150,7 +156,8 @@ Game.onload = function () {
 
         })
       else
-        Game.waitForCardPlay().then(({ card, target }) => {
+        Game.waitForCardPlay().then((card, target) => {
+          console.log("played", card, target)
           card.play(target).then(() => {
             turn++
             infiniteTurn()
