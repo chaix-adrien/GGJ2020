@@ -5,18 +5,17 @@ export default  (events, action, engine, player) => ({
   engine : engine,
   guiEvents : [],
   loop  : function (){
-    console.log(this.guiEvents)
     var evt = this.guiEvents.pop();
-    console.log("t")
     if (!evt) {
       console.log("You dead");
       return ;
     }
-    console.log(evt)
     this.action[evt.name](...evt.param).then((obj) => {
-      console.log(obj)
       if (evt.retour){
-        evt.retour(obj) ;
+        evt.retour(obj);
+        if (evt.retour === window.Engine.action){
+          this.event()
+        }
       }
       this.loop()
     });
@@ -24,11 +23,9 @@ export default  (events, action, engine, player) => ({
   event : function () {
     this.guiEvents = []
     this.events.forEach(elem => {
-      console.log (elem)
        var callback = (elem.triggerable(this.engine) ? elem.trigger(this.engine) : null);
-       console.log ("Apres elem")
-
        if (callback){
+         console.log("Callback :", callback)
          this.guiEvents.push(callback)
        }
     });
