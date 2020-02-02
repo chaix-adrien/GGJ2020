@@ -25,12 +25,30 @@ const images = {
       const perso = customLoad.map(l => {
         const out = []
         out.push(l.file)
-        out.push("customLoad\\" + l.path.split(".\\")[1])
+        if (l.path.includes("\\")) {
+          out.push("customLoad\\" + l.path.split(".\\")[1])
+        } else {
+          out.push("customLoad/" + l.path.split("./")[1])
+        }
         return out
       })
       console.log(perso)
       return perso.concat(
         [["card", "shmup/card.png"],
+        ["card1", "card/carte_1.svg"],
+        ["card2", "card/carte_2.svg"],
+        ["card3", "card/carte_3.svg"],
+        ["card4", "card/carte_4.svg"],
+        ["card5", "card/carte_5.svg"],
+        ["card6", "card/carte_6.svg"],
+        ["card7", "card/carte_7.svg"],
+        ["card1_plus", "card/carte_1_plus.svg"],
+        ["card2_plus", "card/carte_2_plus.svg"],
+        ["card3_plus", "card/carte_3_plus.svg"],
+        ["card4_plus", "card/carte_4_plus.svg"],
+        ["card5_plus", "card/carte_5_plus.svg"],
+        ["card6_plus", "card/carte_6_plus.svg"],
+        ["card7_plus", "card/carte_7_plus.svg"],
         ["backCardPicker", "shmup/back.png"],
         ["cardHighlight", "shmup/cardHighlight.png"],
         ["particle", "shmup/p-bullet.png", { "totalFrame": 10, "interval": 50, "animated": true, "loop": false }],

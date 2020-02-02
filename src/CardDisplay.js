@@ -12,21 +12,21 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
     onPlaySpriteId: onPlaySpriteId,
     interactive: true,
     pointerdown: function (e) {
-      if (this.pile === Game.Picker) {
+      if (Game.waitingForPick) {
         if (Game.CardPicker.getSelection().length + 1 <= Game.CardPicker.toPick) {
           this.selected ? this.deselect() : this.select()
         }
         else
           this.deselect()
+      } else
+        this.selected ? this.deselect() : this.select()
 
-      } else if (!Game.selectedCard)
-        this.select()
     },
     pointerout: function () {
-      if (this.pile === Game.Picker && this.selected) return
+      if (Game.waitingForPick && this.selected) return
       this.scaleTo({ x: 1, y: 1 }, 100)
       this.sendParticles = this.select && true
-      if (this.selected)
+      if (this.selected && !Game.waitingForPick)
         this.addAutomatism("createParticle", "createParticle", { interval: 50 })
     },
     pointerover: function () {
@@ -40,26 +40,29 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
       this.selected = true
       this.setHighlight(0.5)
       this.z = -1
-      if (this.pile === Game.Picker) {
-
-      }
-      if (this.pile === Game.Hand) {
+      this.selectedRecently = true
+      setTimeout(() => {
+        this.selectedRecently = false
+      }, 500)
+      if (Game.waitingForPick) {
+        console.log("SELECT HERE")
+      } else if (this.pile === Game.Hand) {
         this.zindex = 510
         Game.selectedCard = this
+        console.log("and here")
         this.addAutomatism("createParticle", "createParticle", { interval: 50 })
       }
     },
     deselect: function () {
       this.z = 0
-      if (Game.selectedCard !== this && this.pile !== Game.Picker) return
+      if (Game.selectedCard !== this && !Game.waitingForPick) return
       this.selected = false
       this.setHighlight(0)
       this.scaleTo({ x: 1, y: 1 }, 100)
+      this.goToDefaultPos()
+      if (Game.waitingForPick) {
 
-      if (this.pile === Game.Picker) {
-
-      }
-      if (this.pile === Game.Hand) {
+      } else if (this.pile === Game.Hand) {
 
         this.zindex = 500
         this.removeAutomatism("createParticle")
@@ -78,7 +81,7 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
     automatisms: [["init", "init", { persistent: false }]],
     onpointermove: function (that, gpos) {
       if (!that.pile) return
-      if (that.pile === Game.Picker) return
+      if (Game.waitingForPick) return
       if (!that.selected) return
       const pos = { ...gpos }
       const out = { ...gpos }
@@ -188,7 +191,24 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
         }
       })
     },
-
+    switchWith: function (switchWith) {
+      const card1 = this
+      const pile1 = this.pile
+      const card2 = switchWith
+      const pile2 = card2.pile
+      if (pile1) {
+        pile1.addCard(card2)
+        pile1.goToDefaultPos()
+      } else {
+        pile2.removeCard(card2)
+      }
+      if (pile2) {
+        pile2.addCard(card1)
+        pile2.goToDefaultPos()
+      } else {
+        pile1.removeCard(card1)
+      }
+    },
     play: function (target) {
       return new Promise(resolve => {
         if (target) {
@@ -205,8 +225,7 @@ export default (onPlaySpriteId = "explosion", Game = window.Game) => {
       })
     },
     draw: function () {
-      Game.Draw.draw(this)
-      return Promise.resolve(this)
+      return Game.Draw.draw(this)
     },
     spawnInto: function (pile) {
       this.x = 1920 / 2

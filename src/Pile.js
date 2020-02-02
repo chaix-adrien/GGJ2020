@@ -27,15 +27,6 @@ export default (key, pos = { x: 1920 / 2, y: 1080 / 2 }, Game = window.Game) => 
         Game.Hand.goToDefaultPos()
       })
     },
-    switchCards: function (card1, card2) {
-      const pile1 = card1.pile
-      const pile2 = card2.pile
-      if (!pile1 && !pile2) return
-      pile1.addCard(card2)
-      pile2.addCard(card1)
-      pile1.goToDefaultPos()
-      pile2.goToDefaultPos()
-    },
     removeCard: function (card, anim = true) {
       if (card && card.pile === this) {
         card.pile = this
