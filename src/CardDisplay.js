@@ -1,7 +1,6 @@
 import DE from '@dreamirl/dreamengine';
-import ParticleDisplay from "./ParticleDisplay"
 
-export default (onPlaySpriteId = "explosion", spriteId = 'card', manaCost = 1, needTarget = false, Game = window.Game) => {
+export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCost = 1, needTarget = false, Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
     selected: false,
@@ -39,6 +38,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'card', manaCost = 1, n
 
 
     select: function () {
+      if (!Game.waitingForPlay && !Game.waitingForPick) return
       if (Game.waitingForPlay && !Game.Mana.canPlay(this)) return
       this.selected = true
       this.setHighlight(0.5)
@@ -134,7 +134,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'card', manaCost = 1, n
       this.moveTo(pos, 200)
     },
     getHandPosition: function (total = Game.Hand.content.length, id = Game.Hand.content.indexOf(this)) {
-      const espace = 300
+      const espace = 250
       const out = {
         rotation: parseInt(id / 2 + 0.5) * (Math.PI / 30) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : Math.PI / 30 / 2),
         x: parseInt(id / 2 + 0.5) * (espace) * (id % 2 ? - 1 : 1) + (total % 2 ? 0 : espace / 2)
@@ -165,7 +165,9 @@ export default (onPlaySpriteId = "explosion", spriteId = 'card', manaCost = 1, n
     renderer: new DE.SpriteRenderer({ spriteName: spriteId, scale: 1 }),
     gameObjects: [
       new DE.GameObject({
+        scale: { x: 0.95, y: 0.95 },
         alpha: 0,
+        zindex: 10,
         enable: function (time) { console.log("enable", this.fade); this.fade(this.alpha, 0.5, time) },
         disable: function (time) { console.log("disable"); this.fade(this.alpha, 0, time) },
         renderer: new DE.SpriteRenderer({ spriteName: 'cardHighlight', scale: 1 })
