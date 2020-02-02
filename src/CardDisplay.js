@@ -1,13 +1,14 @@
 import DE from '@dreamirl/dreamengine';
 import ParticleDisplay from "./ParticleDisplay"
 
-export default (onPlaySpriteId = "explosion", spriteId = 'card', needTarget = false, Game = window.Game) => {
+export default (onPlaySpriteId = "explosion", spriteId = 'card', manaCost = 1, needTarget = false, Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
     selected: false,
     x: 1920 / 2,
     needTarget: needTarget,
     y: 1080 / 2,
+    manaCost,
     pile: Game.Picker,
     sendParticles: false,
     onPlaySpriteId: onPlaySpriteId,
@@ -19,7 +20,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'card', needTarget = fa
         }
         else
           this.deselect()
-      } else
+      } else if (this.pile === Game.Hand)
         this.selected ? this.deselect() : this.select()
 
     },
@@ -38,6 +39,7 @@ export default (onPlaySpriteId = "explosion", spriteId = 'card', needTarget = fa
 
 
     select: function () {
+      if (Game.waitingForPlay && !Game.Mana.canPlay(this)) return
       this.selected = true
       this.setHighlight(0.5)
       this.z = -1
@@ -222,12 +224,14 @@ export default (onPlaySpriteId = "explosion", spriteId = 'card', needTarget = fa
         Game.addParticle(this.onPlaySpriteId, target || this)
         if (target) {
           this.moveTo(target, 2000)
+          Game.Mana.spendMana(this.manaCost)
           this.destroy()
           this.pile.goToDefaultPos()
           return resolve()
         } else {
           const toGo = { x: this.x, y: this.y - 200 }
           this.moveTo(toGo, 2000)
+          Game.Mana.spendMana(this.manaCost)
           this.destroy()
           this.pile.goToDefaultPos()
 
