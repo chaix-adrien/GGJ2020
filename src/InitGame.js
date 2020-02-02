@@ -26,7 +26,7 @@ export default () => ({
     "handChoice": (objs, nb) => window.Game.waitCardPicker(objs, nb, window.game.Hand),
     "choice": (objs, nb) => window.Game.waitCardPicker(objs, nb),
     "play": () => window.Game.waitForCardPlay(),
-    "None": (param) => Promise.resolve(param)
+    "None": (engine) => Promise.resolve(engine)
   },
   confEvent: [
     {

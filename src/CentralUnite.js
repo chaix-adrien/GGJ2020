@@ -26,6 +26,8 @@ export default (max_life, defense, power) => ({
 		let fenemy = null
 		for (let name in engine.ennemis) {
 			// we're searching for lowest component life percentage
+			if (name == "init")
+				continue ;
 			if (!fenemy && engine.ennemis[name].is_alive())
 				fenemy = engine.ennemis[name]
 			else if	(engine.ennemis[name].is_alive() && (fenemy.life * 100 / fenemy.max_life) >
