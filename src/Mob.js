@@ -30,7 +30,7 @@ export default (spriteId = "heart", pos = { x: 0, y: 0 }, onHurtSpriteId = "expl
       this.gameObjects[0].renderers[1].text = this.life + "/" + this.maxLife
     },
 
-    kill() {
+    kill: function () {
       this.fadeOut()
       this.scaleTo({ x: 1.1, y: 1.1 }, 1000)
       this.askToKill()
