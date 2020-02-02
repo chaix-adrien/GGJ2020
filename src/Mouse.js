@@ -25,7 +25,7 @@ export default (max_life, defense, power) => ({
 		if (engine.partie.hand.length > 0) {
 			let cardId = Math.round(Math.random() % engine.partie.hand.length);
 			engine.partie.deleteCard(cardId);
-			engine.ennemie.mouse.power = false;
+			engine.ennemis.mouse.power = false;
 			return ["execute steal", cardId]
 		}
 		return []
@@ -39,11 +39,11 @@ export default (max_life, defense, power) => ({
 			return false
 		if (engine.turn % 3 == 2)
 			return false;
-		if (!engine.Computer.mouse.is_alive())
+		if (!engine.ennemis.mouse || !engine.ennemis.mouse.is_alive())
 			return false;
-		if ((engine.ennemie.mouse.life * 100 / engine.ennemie.mouse.max_life) > 20)
-			engine.ennemie.mouse.power = true
-		if (engine.ennemie.mouse.power)
+		if ((engine.ennemis.mouse.life * 100 / engine.ennemis.mouse.max_life) > 20)
+			engine.ennemis.mouse.power = true
+		if (engine.ennemis.mouse.power)
 			return true
 		return false
 	}

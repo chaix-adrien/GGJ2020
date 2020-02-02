@@ -26,7 +26,7 @@ export default (max_life, defense, power) => ({
 		let fenemy = null
 		for (let name in engine.ennemis) {
 			// we're searching for lowest component life percentage
-			if (name == "init")
+			if (name == "init" || name == "delete" || name == "validation" || !engine.ennemis[name])
 				continue ;
 			if (!fenemy && engine.ennemis[name].is_alive())
 				fenemy = engine.ennemis[name]
@@ -40,6 +40,8 @@ export default (max_life, defense, power) => ({
 		return ["execute heal", fenemy.name]
 	},
 	validation(engine) {
+		if (!engine.ennemis.centralunite)
+			return false;
 		// if target is the cu trigger screen event
 		if (!engine.event[1] || !engine.computer.centralunite.is_alive())
 			return false;

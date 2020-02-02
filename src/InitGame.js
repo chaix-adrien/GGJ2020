@@ -63,6 +63,11 @@ export default () => ({
     "name": "mouse",
     "validation": (engine) => engine.ennemis.mouse.validation,
     "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.mouse.action),
+  },
+  {
+    "name": "computer",
+    "validation": (engine) => engine.ennemis.validation,
+    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.delete),
   }
   ],
   init : function () {
