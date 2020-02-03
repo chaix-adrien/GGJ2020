@@ -53,7 +53,7 @@ export default (max_life, defense, power) => ({
 		if (!engine.ennemis.centralunite)
 			return false;
 		// if target is the cu trigger screen event
-		if (!engine.event[1] || !engine.computer.centralunite.is_alive())
+		if (!engine.event[1] || !engine.ennemis.centralunite.is_alive())
 			return false;
 		if (!engine.event[1].name == "centralunite")
 			if (engine.turn % 3 == 2)

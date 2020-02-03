@@ -10,7 +10,7 @@ export default (card, handSize = 10) => ({
     return this.deck.length;
   },
   getRandomCard: function (){
-    const rd  = (max) => {Math.floor(Math.random() * Math.floor(max))}
+    const rd  = (max) => Math.floor(Math.random() * Math.floor(max))
     const pos = rd(this.hand.length - 1)
     var card = this.hand[pos]
     this.hand = this.hand.filter((elem) => elem !== card)
@@ -25,7 +25,7 @@ export default (card, handSize = 10) => ({
   },
   replaceCard : function ()  {
     var card = this.getRandomCard()
-    window.Game.draw.addCard(card.gameObj)
+    window.Game.Draw.addCard(card.gameObj)
     this.draw()
   },
   draw : function () {
@@ -38,6 +38,7 @@ export default (card, handSize = 10) => ({
   },
   giveCard : function () {
     var i = 0;
+    console.log(this)
     this.shuffleDraw();
     while (i < this.drawSize) {
       this.draw();

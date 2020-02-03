@@ -13,7 +13,8 @@ export default  (events, action, engine, player) => ({
     this.action[evt.name](...evt.param).then((obj) => {
       if (evt.retour){
         evt.retour(obj);
-        if (evt.retour === window.Engine.action){
+        if (evt.name === "play"){
+          console.log("CALL EVENT")
           this.event()
         }
       }
@@ -23,7 +24,7 @@ export default  (events, action, engine, player) => ({
   event : function () {
     this.guiEvents = []
     this.events.forEach(elem => {
-       var callback = (elem.triggerable(window.Engine) ? elem.trigger(window.Engine) : null);
+       var callback = (elem.triggerable(this.engine) ? elem.trigger(this.engine) : null);
        if (callback){
          console.log("Callback :", callback)
          this.guiEvents.push(callback)

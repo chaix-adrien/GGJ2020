@@ -95,47 +95,47 @@ export default () => ({
     {
       "name": "end",
       "validation": (engine) => { console.log("Mana",  engine.player.mana); return engine.player.mana == 0 },
-      "callback": (engine) =>  PromiseParam(9, "None", [engine], engine.end),
+      "callback": (engine) => {console.log(engine) ; return PromiseParam(9, "None", [], window.Engine.end) },
     },
     {
       "name": "tour",
-      "validation": (engine) => {console.log("HAnd", window.Game.Hand.content); return engine.turn % 2 === 0},
-      "callback":  () => PromiseParam(5, "choice", [window.Game.Draw.content.filter(elem => window.Game.Draw.content.indexOf(elem) < 3), 1], window.Engine.choice)
+      "validation": (engine) => {console.log("HAnd", window.Game.Hand.content); return engine.turn % 4 === 0},
+      "callback": (engine) => PromiseParam(5, "choice", [window.Game.Draw.content.filter(elem => window.Game.Draw.content.indexOf(elem) < 3), 1], (obj) => engine.choice(obj))
     },
   {
     "name": "tour",
     "validation": (engine) => engine.player.is_alive(),
-    "callback":  () => PromiseParam(5, "play", [], (window.Engine.action))
+    "callback": (engine) => PromiseParam(1, "play", [],  (obj) => engine.action(obj))
   },
   {
     "name": "draw",
     "validation": validDraw,
-    "callback": () =>  PromiseParam(8, "None", [], () => {window.Engine.partie.giveCard()})
+    "callback":   (engine) => {console.log("!!!!  DRAW ENGINE !!!!!!", engine); return  PromiseParam(8, "None", [engine], (engine) => engine.partie.giveCard())}
   },
   {
     "name": "centralunite",
-    "validation": (engine) => engine.ennemis.centralunite.validation,
-    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.centralunite.action),
+    "validation": (engine) => {  engine.ennemis.centralunite.validation(engine) && engine.turn % 2 == 0 },
+    "callback":(engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.centralunite.action),
   },
   {
     "name": "screen",
-    "validation": (engine) => engine.ennemis.screen.validation,
-    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.screen.action),
+    "validation": (engine) => { engine.ennemis.screen.validation(engine) && engine.turn  > 1},
+    "callback":(engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.screen.action),
   },
   {
     "name": "keyboard",
-    "validation": (engine) => engine.ennemis.keyboard.validation,
-    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.keyboard.action),
+    "validation": (engine) => { engine.ennemis.keyboard.validation(engine) && engine.turn > 1 },
+    "callback":(engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.keyboard.action),
   },
   {
     "name": "mouse",
-    "validation": (engine) => engine.ennemis.mouse.validation,
+    "validation": (engine) => { engine.ennemis.mouse.validation(engine) && engine.turn > 1},
     "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.mouse.action),
   },
   {
     "name": "computer",
-    "validation": (engine) => engine.ennemis.validation,
-    "callback": (engine) =>  PromiseParam(2, "None", [engine], engine.ennemis.delete),
+    "validation": (engine) => {engine.ennemis.validation(engine) },
+    "callback":  (engine) => PromiseParam(2, "None", [engine], engine.ennemis.delete(engine)),
   }
 
   ],
@@ -143,7 +143,8 @@ export default () => ({
     this.initCard()
     this.initEvent()
     this.initLoop()
-    window.Game.Mana.setMana(3)
+      this.gameLoop = GameLoop(this.events, this.action, window.Engine, this.player)
+    window.Game.Mana.setMana(this.player.mana)
 
   },
   initEvent : function(){
@@ -167,16 +168,12 @@ export default () => ({
   },
 
   initLoop : function (){
-    this.player =  Player("carlito", 30, 3);
-    this.engine = Engine(this.cards, [], this.player);
+    this.player =  Player("carlito", 30, 70);
     var ennemis = Computer()
     ennemis.init()
     console.log("======> Ennemis :", ennemis)
-    this.engine = Engine(this.cards, ennemis, this.player);
+    window.Engine = Engine(this.cards, ennemis, this.player);
     console.log("OK")
-    this.gameLoop = GameLoop(this.events, this.action, this.engine, this.player)
-    window.Engine = this.engine
-
   },
   getLoop : function (){
     return this.gameLoop

@@ -11,6 +11,8 @@ export default (name, validation, callback, permanante=true) => ({
     if (!this.perma) {
       this.active = false;
     }
+    console.log("trigger Engine : ", engine)
+    console.log("trigger callback", this.callback(engine).retour)
     return this.callback(engine)
   },
   triggerable : function (engine) {
