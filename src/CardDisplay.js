@@ -1,6 +1,6 @@
 import DE from '@dreamirl/dreamengine';
 
-export default (onPlaySpriteId = "explosion", spriteId = 'carte_1_plus', manaCost = 1, needTarget = false, Game = window.Game) => {
+export default (onPlaySpriteId = "explosion", spriteId = 'carte_' + Math.floor(Math.random() * 6 + 1) + '_plus', manaCost = 1, needTarget = false, Game = window.Game) => {
   const out = new DE.GameObject({
     zindex: 500,
     selected: false,
