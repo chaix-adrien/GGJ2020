@@ -1,5 +1,2 @@
-# game_sample
-
-A good way to get ready with the engine
-
-After clone simply do npm i && npm start
+Global Game Jam 2020
+Un jeu de carte. Le but: detruire un ordinateur.
